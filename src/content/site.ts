@@ -5,7 +5,9 @@ export const siteConfig: SiteConfig = {
   tagline: 'Drive Your Dream. Pay With Ease.',
   description:
     'India\'s most trusted car-on-EMI platform. Choose from 500+ certified vehicles with flexible EMI plans starting at just 0% down payment. Fastest approvals, lowest interest rates.',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://driveeasy-emi.com',
+  url:
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://driveeasy-emi.com'),
   ogImage: '/og-image.jpg',
   keywords: [
     'car loan',

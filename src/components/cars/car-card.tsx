@@ -32,7 +32,7 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
             alt={car.name}
             fill
             sizes="(min-width:1280px) 25vw, (min-width:768px) 33vw, 100vw"
-            className="object-cover transition-transform duration-[800ms] group-hover:scale-110"
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-brand-black/10 to-transparent" />
 

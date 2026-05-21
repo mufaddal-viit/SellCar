@@ -9,5 +9,7 @@ build
 *.log
 .vercel
 next-env.d.ts
+.claude/
 /public/uploads/*
 !/public/uploads/.gitkeep
+
