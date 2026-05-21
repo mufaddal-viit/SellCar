@@ -20,12 +20,12 @@ const features = [
   {
     icon: TrendingDown,
     title: 'Lowest Rates',
-    desc: 'Interest rates starting at 7.49% — significantly below market average for car loans.',
+    desc: 'Profit rates starting at 2.99% — significantly below market average across UAE banks.',
   },
   {
     icon: Wallet,
     title: 'Zero Hidden Charges',
-    desc: 'What we quote is what you pay. All processing, RTO and insurance fees included upfront.',
+    desc: 'What we quote is what you pay. All processing, registration and insurance fees included upfront.',
   },
   {
     icon: ShieldCheck,
@@ -40,7 +40,7 @@ const features = [
   {
     icon: Clock,
     title: 'Flexible Tenures',
-    desc: 'Choose anything from 12 to 84 months. Step-up EMI plans available for fresh graduates.',
+    desc: 'Choose anything from 12 to 60 months. Step-up installment plans available for first-time UAE buyers.',
   },
 ];
 

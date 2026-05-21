@@ -8,7 +8,7 @@ import { siteConfig } from '@/content/site';
 
 export const metadata: Metadata = {
   title: 'About Us',
-  description: `Founded in ${siteConfig.business.foundedYear}, ${siteConfig.business.name} is India's most trusted car-on-EMI platform with ${siteConfig.business.branches} branches nationwide.`,
+  description: `Founded in ${siteConfig.business.foundedYear}, ${siteConfig.business.name} is the UAE's most trusted car finance platform with ${siteConfig.business.branches} showrooms across all 7 emirates.`,
   alternates: { canonical: '/about' },
 };
 
@@ -36,8 +36,8 @@ const values = [
   },
   {
     icon: Sparkles,
-    title: 'Built for India',
-    desc: 'From metro cities to tier-3 towns, our process is designed for the realities of Indian buyers and Indian roads.',
+    title: 'Built for the UAE',
+    desc: 'From Sheikh Zayed Road to the dunes, our process is designed for the realities of UAE residents — Emiratis, expats and freelancers alike.',
   },
 ];
 
@@ -65,14 +65,14 @@ export default function AboutPage() {
               </span>
             </div>
             <h1 className="display-heading text-5xl md:text-7xl text-white leading-[0.95]">
-              We help India
+              We help the UAE
               <br />
               <span className="italic text-brand-red">drive home.</span>
             </h1>
             <p className="mt-7 max-w-xl text-lg text-white/70 leading-relaxed">
               {siteConfig.business.name} was founded with a simple belief: owning
               a car shouldn't require a fortune up front. Today, we're the
-              fastest-growing auto-finance company in India.
+              fastest-growing auto-finance company in the Emirates.
             </p>
           </div>
         </div>
@@ -111,15 +111,16 @@ export default function AboutPage() {
           <div>
             <SectionHeading
               eyebrow="Our Story"
-              title="From one branch to"
-              highlight={`${siteConfig.business.branches} cities.`}
-              description={`What started as a single showroom in 2014 has grown into India's most trusted car-on-EMI platform. We've reimagined automotive finance from the ground up — replacing paperwork with one-day approvals, hidden fees with up-front quotes, and queue-based service with dedicated relationship managers.`}
+              title="From one showroom to"
+              highlight={`${siteConfig.business.branches} locations.`}
+              description={`What started as a single showroom in 2014 has grown into the UAE's most trusted car finance platform. We've reimagined automotive finance from the ground up — replacing paperwork with one-day approvals, hidden fees with up-front quotes, and queue-based service with dedicated relationship managers.`}
             />
             <p className="mt-6 text-white/60 leading-relaxed">
-              Today, we serve customers in over {siteConfig.business.branches}{' '}
-              cities, partner with every major auto brand, and have helped more
-              than {siteConfig.business.customers} families bring home their
-              dream car.
+              Today, we serve customers across all 7 emirates through{' '}
+              {siteConfig.business.branches} showrooms, partner with every
+              major auto brand, and have helped more than{' '}
+              {siteConfig.business.customers} families bring home their dream
+              car.
             </p>
           </div>
         </div>

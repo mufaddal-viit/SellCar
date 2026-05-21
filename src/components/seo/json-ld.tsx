@@ -15,7 +15,7 @@ export function OrganizationJsonLd() {
     address: {
       '@type': 'PostalAddress',
       streetAddress: siteConfig.contact.address,
-      addressCountry: 'IN',
+      addressCountry: 'AE',
     },
     sameAs: Object.values(siteConfig.social),
   };
@@ -45,7 +45,7 @@ export function VehicleJsonLd({ car }: { car: Car }) {
     offers: {
       '@type': 'Offer',
       price: car.price,
-      priceCurrency: 'INR',
+      priceCurrency: 'AED',
       availability: 'https://schema.org/InStock',
       seller: { '@type': 'AutoDealer', name: siteConfig.name },
     },

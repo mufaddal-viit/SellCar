@@ -14,7 +14,7 @@ export function TestimonialsSection() {
           eyebrow="Real Stories"
           title="From driveway"
           highlight="to dream way."
-          description="Over 50,000 happy customers across India. Here's what they have to say."
+          description="Over 35,000 happy customers across the UAE. Here's what they have to say."
         />
 
         <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">

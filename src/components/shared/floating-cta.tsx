@@ -9,7 +9,7 @@ export function FloatingCTA() {
   if (pathname?.startsWith('/admin')) return null;
 
   const waMsg = encodeURIComponent(
-    `Hi ${siteConfig.name}, I'm interested in financing a car on EMI. Please share more details.`,
+    `Hi ${siteConfig.name}, I'm interested in financing a car with monthly installments. Please share more details.`,
   );
 
   return (

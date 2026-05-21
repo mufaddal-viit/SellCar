@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'en_IN',
+    locale: 'en_AE',
     url: siteConfig.url,
     title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description: siteConfig.description,
