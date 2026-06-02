@@ -3,14 +3,13 @@
 import { useMemo, useState } from 'react';
 import { CarCard } from './car-card';
 import { CarFilters } from './car-filters';
-import { cars } from '@/content/cars';
 import { SlidersHorizontal, X } from 'lucide-react';
+import type { Car } from '@/types';
 
 const CATEGORIES = ['Sedan', 'SUV', 'Hatchback', 'Luxury', 'Electric', 'Sports'];
 const FUELS = ['Petrol', 'Diesel', 'Electric', 'Hybrid', 'CNG'];
-const BRANDS = Array.from(new Set(cars.map((c) => c.brand))).sort();
 
-export function CarGrid() {
+export function CarGrid({ cars }: { cars: Car[] }) {
   const [filters, setFilters] = useState({
     category: 'all',
     fuel: 'all',
@@ -18,6 +17,11 @@ export function CarGrid() {
     sort: 'featured',
   });
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const BRANDS = useMemo(
+    () => Array.from(new Set(cars.map((c) => c.brand))).sort(),
+    [cars],
+  );
 
   const filtered = useMemo(() => {
     let arr = cars.filter((c) => {
@@ -43,7 +47,7 @@ export function CarGrid() {
         );
     }
     return arr;
-  }, [filters]);
+  }, [filters, cars]);
 
   const update = (next: Partial<typeof filters>) =>
     setFilters((f) => ({ ...f, ...next }));
@@ -98,7 +102,7 @@ export function CarGrid() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-px bg-white/[0.06] border border-white/[0.06]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-6">
               {filtered.map((car, i) => (
                 <CarCard key={car.id} car={car} index={i} />
               ))}

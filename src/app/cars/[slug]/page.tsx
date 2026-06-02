@@ -11,24 +11,25 @@ import {
   Calendar,
   Cog,
   Zap,
-  MessageCircle,
-  Phone,
 } from 'lucide-react';
 import { CarGallery } from '@/components/cars/car-gallery';
 import { CarCard } from '@/components/cars/car-card';
+import { CarCta } from '@/components/cars/car-cta';
+import { EnquiryForm } from '@/components/shared/enquiry-form';
 import { EMICalculator } from '@/components/emi/emi-calculator';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { VehicleJsonLd, BreadcrumbJsonLd } from '@/components/seo/json-ld';
-import { siteConfig } from '@/content/site';
-import { getCarBySlug, getRelatedCars, cars } from '@/content/cars';
+import { getCarBySlug, getRelatedCars, getCars } from '@/server/cars';
 import { formatPrice, formatEMI } from '@/lib/utils';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
+  const cars = await getCars();
   return cars.map((c) => ({ slug: c.slug }));
 }
 
@@ -36,7 +37,7 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const car = getCarBySlug(slug);
+  const car = await getCarBySlug(slug);
   if (!car) return { title: 'Car not found' };
   return {
     title: `${car.name} on EMI from ${formatEMI(car.emiFrom)}/mo`,
@@ -52,14 +53,12 @@ export async function generateMetadata({
 
 export default async function CarDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const car = getCarBySlug(slug);
+  const car = await getCarBySlug(slug);
   if (!car) notFound();
 
-  const related = getRelatedCars(slug);
-
-  const waMsg = encodeURIComponent(
-    `Hi ${siteConfig.name}, I'm interested in the ${car.name} (EMI from ${formatEMI(car.emiFrom)}/mo). Please share more details.`,
-  );
+  const related = await getRelatedCars(slug);
+  const isSold = car.status === 'sold';
+  const isReserved = car.status === 'reserved';
 
   return (
     <article className="bg-brand-black">
@@ -93,7 +92,13 @@ export default async function CarDetailPage({ params }: PageProps) {
               <span className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-red">
                 {car.brand} · {car.year}
               </span>
-              {car.badge && <Badge>{car.badge}</Badge>}
+              {isSold ? (
+                <Badge variant="muted">Sold</Badge>
+              ) : isReserved ? (
+                <Badge variant="outline">Reserved</Badge>
+              ) : (
+                car.badge && <Badge>{car.badge}</Badge>
+              )}
             </div>
 
             <h1 className="display-heading text-4xl md:text-5xl text-white leading-tight">
@@ -164,24 +169,12 @@ export default async function CarDetailPage({ params }: PageProps) {
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Button asChild size="lg">
-                <a
-                  href={`https://wa.me/${siteConfig.contact.whatsapp}?text=${waMsg}`}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  WhatsApp Us
-                </a>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <a href={`tel:${siteConfig.contact.phone}`}>
-                  <Phone className="w-4 h-4" />
-                  Call Now
-                </a>
-              </Button>
-            </div>
+            <CarCta
+              carId={car.id}
+              carName={car.name}
+              emiFrom={car.emiFrom}
+              status={car.status}
+            />
           </div>
         </div>
       </div>
@@ -227,6 +220,25 @@ export default async function CarDetailPage({ params }: PageProps) {
         </div>
       </section>
 
+      <section className="border-t border-white/[0.06] bg-brand-black-soft">
+        <div className="container-wide py-16 md:py-24">
+          <div className="mx-auto max-w-2xl">
+            <div className="mb-8">
+              <h2 className="display-heading text-3xl md:text-4xl text-white">
+                Enquire about this{' '}
+                <span className="italic text-brand-red">{car.name}.</span>
+              </h2>
+              <p className="mt-3 text-white/60">
+                Share your details and our team will get back to you with availability and the best finance plan.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/[0.07] bg-brand-black p-6 md:p-8">
+              <EnquiryForm carId={car.id} carName={car.name} />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {related.length > 0 && (
         <section className="border-t border-white/[0.06] bg-brand-black-soft">
           <div className="container-wide py-16 md:py-24">
@@ -243,7 +255,7 @@ export default async function CarDetailPage({ params }: PageProps) {
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.06] border border-white/[0.06]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
               {related.map((c, i) => (
                 <CarCard key={c.id} car={c} index={i} />
               ))}

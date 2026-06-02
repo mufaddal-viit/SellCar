@@ -1,10 +1,11 @@
 import type { MetadataRoute } from 'next';
 import { siteConfig } from '@/content/site';
-import { cars } from '@/content/cars';
+import { getCars } from '@/server/cars';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteConfig.url;
   const now = new Date();
+  const cars = await getCars();
 
   const routes = [
     '',

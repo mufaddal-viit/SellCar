@@ -258,7 +258,7 @@ export const cars: Car[] = [
     power: '385 bhp',
     images: [
       'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1600&q=80',
-      'https://images.unsplash.com/photo-1611821064430-0d40291922d2?auto=format&fit=crop&w=1600&q=80',
+      'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1600&q=80',
     ],
     features: [
       'PASM Sport Suspension',
@@ -275,14 +275,5 @@ export const cars: Car[] = [
   },
 ];
 
-export const getCarBySlug = (slug: string) => cars.find((c) => c.slug === slug);
-export const getFeaturedCars = () => cars.filter((c) => c.featured);
-export const getCarsByCategory = (cat: string) =>
-  cars.filter((c) => c.category === cat);
-export const getRelatedCars = (slug: string, limit = 3) => {
-  const car = getCarBySlug(slug);
-  if (!car) return [];
-  return cars
-    .filter((c) => c.slug !== slug && c.category === car.category)
-    .slice(0, limit);
-};
+// NOTE: This array is the SEED / fallback dataset. Live data is served from the
+// database via `@/server/cars`, which falls back to this list when no DB is set.

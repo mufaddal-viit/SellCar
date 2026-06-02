@@ -3,10 +3,10 @@ import { ArrowRight } from 'lucide-react';
 import { SectionHeading } from '@/components/shared/section-heading';
 import { CarCard } from '@/components/cars/car-card';
 import { Button } from '@/components/ui/button';
-import { getFeaturedCars } from '@/content/cars';
+import { getFeaturedCars } from '@/server/cars';
 
-export function FeaturedCars() {
-  const featured = getFeaturedCars();
+export async function FeaturedCars() {
+  const featured = await getFeaturedCars();
   return (
     <section className="section bg-brand-black">
       <div className="container-wide">
@@ -25,7 +25,7 @@ export function FeaturedCars() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-white/[0.06] border border-white/[0.06]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6">
           {featured.map((car, i) => (
             <CarCard key={car.id} car={car} index={i} />
           ))}

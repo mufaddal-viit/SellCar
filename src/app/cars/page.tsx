@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { CarGrid } from '@/components/cars/car-grid';
+import { getCars } from '@/server/cars';
 
 export const metadata: Metadata = {
   title: 'Browse Cars',
@@ -8,10 +9,11 @@ export const metadata: Metadata = {
   alternates: { canonical: '/cars' },
 };
 
-export default function CarsPage() {
+export default async function CarsPage() {
+  const cars = await getCars();
   return (
     <div className="bg-brand-black min-h-screen">
-      <CarGrid />
+      <CarGrid cars={cars} />
     </div>
   );
 }

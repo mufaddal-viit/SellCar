@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+type Media {
+  url      String
+  publicId String
+  width    Int?
+  height   Int?
+}
+
+model Car {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  slug         String    @unique
+  name         String
+  brand        String
+  category     String
+  price        Float
+  downPayment  Float     @default(0)
+  emiFrom      Float     @default(0)
+  tenure       Int       @default(60)
+  year         Int
+  fuel         String
+  transmission String
+  mileage      String    @default("")
+  seating      Int       @default(5)
+  engine       String    @default("")
+  power        String    @default("")
+  images       Media[]
+  videos       Media[]
+  features     String[]
+  description  String    @default("")
+  badge        String?
+  featured     Boolean   @default(false)
+  status       String    @default("available")
+  published    Boolean   @default(true)
+  soldAt       DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([brand])
+  @@index([category])
+  @@index([status])
+  @@index([featured])
+  @@index([published])
+}
+
+model Lead {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  type      String   @default("enquiry")
+  name      String?
+  phone     String?
+  email     String?
+  message   String?
+  carId     String?
+  carName   String?
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type])
+  @@index([status])
+  @@index([carId])
+}

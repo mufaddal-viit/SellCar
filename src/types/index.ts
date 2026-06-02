@@ -16,10 +16,40 @@ export interface Car {
   engine: string;
   power: string;
   images: string[];
+  videos?: string[];
   features: string[];
   description: string;
   badge?: 'Hot' | 'New' | 'Popular' | 'Best Deal';
   featured?: boolean;
+  status?: CarStatus;
+  published?: boolean;
+  soldAt?: string;
+}
+
+export type CarStatus = 'available' | 'reserved' | 'sold';
+
+/** A single uploaded asset as stored in the DB (publicId lets us delete from Cloudinary). */
+export interface MediaAsset {
+  url: string;
+  publicId: string;
+  width?: number;
+  height?: number;
+}
+
+export type LeadType = 'enquiry' | 'whatsapp' | 'call';
+export type LeadStatus = 'new' | 'contacted' | 'closed';
+
+export interface Lead {
+  id: string;
+  type: LeadType;
+  name?: string;
+  phone?: string;
+  email?: string;
+  message?: string;
+  carId?: string;
+  carName?: string;
+  status: LeadStatus;
+  createdAt: string;
 }
 
 export interface SiteConfig {

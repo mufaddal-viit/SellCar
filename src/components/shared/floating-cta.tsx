@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { Phone, MessageCircle } from 'lucide-react';
 import { siteConfig } from '@/content/site';
+import { trackInteraction } from '@/lib/track';
 
 export function FloatingCTA() {
   const pathname = usePathname();
@@ -19,6 +20,7 @@ export function FloatingCTA() {
         target="_blank"
         rel="noopener"
         aria-label="WhatsApp us"
+        onClick={() => trackInteraction('whatsapp')}
         className="group relative grid place-items-center w-14 h-14 rounded-full bg-emerald-500 text-white shadow-[0_12px_30px_-8px_rgba(16,185,129,0.6)] hover:scale-110 transition-transform"
       >
         <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-30" />
@@ -30,6 +32,7 @@ export function FloatingCTA() {
       <a
         href={`tel:${siteConfig.contact.phone}`}
         aria-label="Call us"
+        onClick={() => trackInteraction('call')}
         className="group relative grid place-items-center w-14 h-14 rounded-full bg-brand-red text-white shadow-[0_12px_30px_-8px_rgba(225,6,0,0.6)] hover:scale-110 transition-transform"
       >
         <Phone className="w-5 h-5" />

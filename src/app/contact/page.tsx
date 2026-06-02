@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Mail, MapPin, MessageCircle, Phone, Clock } from 'lucide-react';
 import { SectionHeading } from '@/components/shared/section-heading';
+import { EnquiryForm } from '@/components/shared/enquiry-form';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/content/site';
 
@@ -50,6 +51,24 @@ export default function ContactPage() {
             href={`mailto:${siteConfig.contact.email}`}
             cta="Send email"
           />
+        </div>
+      </section>
+
+      <section className="border-t border-white/[0.06]">
+        <div className="container-wide py-16 md:py-24">
+          <div className="mx-auto max-w-2xl">
+            <div className="mb-8 text-center">
+              <h2 className="display-heading text-3xl text-white md:text-4xl">
+                Send us a <span className="italic text-brand-red">message.</span>
+              </h2>
+              <p className="mt-3 text-white/60">
+                Leave your details and our finance team will reach out — usually within a few hours.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/[0.07] bg-brand-black-soft p-6 md:p-8">
+              <EnquiryForm />
+            </div>
+          </div>
         </div>
       </section>
 
