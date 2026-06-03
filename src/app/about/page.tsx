@@ -8,13 +8,13 @@ import { siteConfig } from '@/content/site';
 
 export const metadata: Metadata = {
   title: 'About Us',
-  description: `Founded in ${siteConfig.business.foundedYear}, ${siteConfig.business.name} is the UAE's most trusted car finance platform with ${siteConfig.business.branches} showrooms across all 7 emirates.`,
+  description: `Founded in ${siteConfig.business.foundedYear}, ${siteConfig.business.name} is one of the UAE's most trusted car finance platforms, serving customers across all 7 emirates.`,
   alternates: { canonical: '/about' },
 };
 
 const stats = [
   { icon: Users, value: siteConfig.business.customers, label: 'Happy Customers' },
-  { icon: Building2, value: siteConfig.business.branches, label: 'Branches' },
+  { icon: Building2, value: '7', label: 'Emirates Served' },
   { icon: Award, value: siteConfig.business.carsSold, label: 'Cars Delivered' },
   {
     icon: Sparkles,
@@ -112,12 +112,11 @@ export default function AboutPage() {
             <SectionHeading
               eyebrow="Our Story"
               title="From one showroom to"
-              highlight={`${siteConfig.business.branches} locations.`}
-              description={`What started as a single showroom in 2014 has grown into the UAE's most trusted car finance platform. We've reimagined automotive finance from the ground up — replacing paperwork with one-day approvals, hidden fees with up-front quotes, and queue-based service with dedicated relationship managers.`}
+              highlight="all 7 emirates."
+              description={`What started as a single showroom has grown into one of the UAE's most trusted car finance platforms. We've reimagined automotive finance from the ground up — replacing paperwork with one-day approvals, hidden fees with up-front quotes, and queue-based service with dedicated relationship managers.`}
             />
             <p className="mt-6 text-white/60 leading-relaxed">
-              Today, we serve customers across all 7 emirates through{' '}
-              {siteConfig.business.branches} showrooms, partner with every
+              Today, we serve customers across all 7 emirates, partner with every
               major auto brand, and have helped more than{' '}
               {siteConfig.business.customers} families bring home their dream
               car.

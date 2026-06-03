@@ -4,7 +4,7 @@ export const siteConfig: SiteConfig = {
   name: 'Buy&Drive Cars',
   tagline: 'Drive Your Dream. Pay With Ease.',
   description:
-    "The UAE's most trusted car finance platform. Choose from 500+ certified vehicles with flexible monthly installments starting at just 0% down payment. Fastest approvals, lowest profit rates.",
+    "A fresh way to drive home your next car in the UAE. Hand-picked vehicles with flexible monthly installments, zero down payment, and free insurance & registration. Fast approvals, honest profit rates, zero hassle.",
   url:
     process.env.NEXT_PUBLIC_SITE_URL ||
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://buyanddrivecars.ae'),
@@ -40,46 +40,55 @@ export const siteConfig: SiteConfig = {
   },
   business: {
     name: 'Buy&Drive Cars Auto Finance LLC',
-    foundedYear: 2014,
-    branches: 12,
-    customers: '35,000+',
-    carsSold: '85,000+',
+    foundedYear: 2024,
+    customers: '15,00+',
+    carsSold: '15,00+',
   },
 };
 
 export const mainNav: NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'Browse Cars', href: '/cars' },
-  { label: 'EMI Calculator', href: '/emi-calculator' },
+  { label: 'Services', href: '/services' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
 
 export const footerLinks = {
   company: [
-    { label: 'About Us', href: '/about' },
-    { label: 'Our Showrooms', href: '/about#branches' },
+    { label: 'Who We Are', href: '/about' },
+    { label: 'News & Updates', href: '/news', soon: true },
     { label: 'Careers', href: '/about#careers' },
-    { label: 'Press & Media', href: '/about#press' },
+    { label: 'Press & Media', href: '/press', soon: true },
   ],
   services: [
-    { label: 'New Car Finance', href: '/cars?type=new' },
-    { label: 'Used Car Finance', href: '/cars?type=used' },
-    { label: 'Islamic Finance', href: '/services/islamic-finance' },
-    { label: 'EMI Calculator', href: '/emi-calculator' },
+    { label: 'Submit Documents', href: '/services' },
+    { label: 'Check Documents', href: '/services/check-status' },
     { label: 'Insurance', href: '/services/insurance' },
   ],
+  financing: [
+  { label: 'How EMI Works', href: '/financing' },
+  { label: 'Check Eligibility', href: '/financing#eligibility' },
+  { label: 'Required Documents', href: '/financing#documents' },
+  { label: 'Profit Rates', href: '/financing#rates' },
+],
   support: [
     { label: 'Contact Us', href: '/contact' },
     { label: 'FAQs', href: '/#faq' },
     { label: 'Privacy Policy', href: '/privacy' },
     { label: 'Terms of Service', href: '/terms' },
   ],
+  legal: [
+  { label: 'Terms & Conditions', href: '/terms' },
+  { label: 'Privacy Policy', href: '/privacy' },
+  { label: 'Cookie Policy', href: '/cookies' },
+  { label: 'Sharia Compliance', href: '/sharia' },
+],
 };
 
 export const heroStats = [
-  { label: 'Happy Customers', value: '35K+' },
-  { label: 'Cars Delivered', value: '85K+' },
-  { label: 'Showrooms', value: '12' },
+  { label: 'Cars Financed', value: '1,200+' },
+  { label: 'Approval Rate', value: '94%' },
+  { label: 'Profit Rate From', value: '1.99%' },
   { label: 'Avg. Approval', value: '24 hrs' },
 ];

@@ -83,7 +83,6 @@ export interface SiteConfig {
   business: {
     name: string;
     foundedYear: number;
-    branches: number;
     customers: string;
     carsSold: string;
   };

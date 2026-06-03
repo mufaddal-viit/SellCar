@@ -11,7 +11,7 @@ export function CTASection() {
         <div className="relative overflow-hidden bg-brand-red">
           <div className="absolute inset-0 opacity-30">
             <Image
-              src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80"
+              src="/hero/slide2.avif"
               alt=""
               fill
               sizes="100vw"
@@ -47,7 +47,7 @@ export function CTASection() {
             <div className="lg:justify-self-end space-y-4 w-full lg:max-w-sm">
               <Button asChild size="lg" variant="secondary" className="w-full">
                 <Link href="/cars">
-                  Browse 500+ Cars
+                  Browse 20+ Cars
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </Button>

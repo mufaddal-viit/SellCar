@@ -54,4 +54,12 @@ export const brands = [
   { name: 'Lexus', logo: '/brands/lexus.svg' },
   { name: 'Hyundai', logo: '/brands/hyundai.svg' },
   { name: 'Honda', logo: '/brands/honda.svg' },
+  { name: 'JAC', logo: '/brands/jac.svg' },
+  { name: 'Mitsubishi', logo: '/brands/mitsubishi.svg' },
+  { name: 'Chevrolet', logo: '/brands/chevrolet.svg' },
+  { name: 'Kia', logo: '/brands/kia.svg' },
+  { name: 'Haval', logo: '/brands/haval.svg' },
+  { name: 'MG', logo: '/brands/mg.svg' },
+  { name: 'Suzuki', logo: '/brands/suzuki.svg' },
+  { name: 'Jetour', logo: '/brands/jetour.svg' },
 ];

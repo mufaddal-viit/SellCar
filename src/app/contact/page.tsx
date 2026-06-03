@@ -8,7 +8,7 @@ import { siteConfig } from '@/content/site';
 export const metadata: Metadata = {
   title: 'Contact Us',
   description:
-    'Get in touch with our UAE car finance experts. Available 7 days a week via phone, WhatsApp, or visit any of our showrooms across the Emirates.',
+    'Get in touch with our UAE car finance experts. Available 7 days a week via phone, WhatsApp, or visit our showroom in Dubai.',
   alternates: { canonical: '/contact' },
 };
 
@@ -24,7 +24,7 @@ export default function ContactPage() {
           eyebrow="Get in touch"
           title="We're here,"
           highlight="all week."
-          description="Our finance experts are available 7 days a week. Call, WhatsApp, or visit any of our branches — whichever works best for you."
+          description="Our finance experts are available 7 days a week. Call, WhatsApp, or visit us in person — whichever works best for you."
         />
 
         <div className="mt-14 grid grid-cols-1 lg:grid-cols-3 gap-6">

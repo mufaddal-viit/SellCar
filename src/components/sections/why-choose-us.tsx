@@ -2,63 +2,62 @@
 
 import { motion } from 'framer-motion';
 import {
-  Zap,
   ShieldCheck,
+  FileCheck,
   Wallet,
+  CalendarClock,
+  ReceiptText,
+  TrendingDown,
   HeartHandshake,
   Clock,
-  TrendingDown,
+  Activity,
+  CarFront,
+  Car,
+  Gauge,
+  Droplets,
+  ListChecks,
+  BadgeCheck,
+  Check,
+  type LucideIcon,
 } from 'lucide-react';
 import { SectionHeading } from '@/components/shared/section-heading';
+import { whyChooseUs, assuranceCover } from '@/content/features';
 
-const features = [
-  {
-    icon: Zap,
-    title: '24-hour Approvals',
-    desc: 'Get approved in a single day with our AI-powered underwriting and digital documentation.',
-  },
-  {
-    icon: TrendingDown,
-    title: 'Lowest Rates',
-    desc: 'Profit rates starting at 2.99% — significantly below market average across UAE banks.',
-  },
-  {
-    icon: Wallet,
-    title: 'Zero Hidden Charges',
-    desc: 'What we quote is what you pay. All processing, registration and insurance fees included upfront.',
-  },
-  {
-    icon: ShieldCheck,
-    title: '200-Point Inspection',
-    desc: 'Every certified pre-owned car passes our rigorous mechanical and safety inspection.',
-  },
-  {
-    icon: HeartHandshake,
-    title: 'Lifetime Service',
-    desc: 'Free annual servicing and roadside assistance for the entire duration of your loan.',
-  },
-  {
-    icon: Clock,
-    title: 'Flexible Tenures',
-    desc: 'Choose anything from 12 to 60 months. Step-up installment plans available for first-time UAE buyers.',
-  },
-];
+// Maps the icon names in content/features.ts to their lucide components.
+const ICONS: Record<string, LucideIcon> = {
+  ShieldCheck,
+  FileCheck,
+  Wallet,
+  CalendarClock,
+  ReceiptText,
+  TrendingDown,
+  HeartHandshake,
+  Clock,
+  Activity,
+  CarFront,
+  Car,
+  Gauge,
+  Droplets,
+  ListChecks,
+  BadgeCheck,
+};
 
 export function WhyChooseUs() {
   return (
     <section className="section bg-brand-black-soft border-y border-white/[0.06]">
       <div className="container-wide">
         <SectionHeading
-          eyebrow="The DriveEasy Edge"
+          eyebrow="The Buy&Drive Edge"
           title="Why thousands trust us"
           highlight="every single day."
-          description="We've reimagined car financing from the ground up. No paperwork mountains, no surprise fees, no waiting weeks."
+          description="Certified pre-owned cars, transparent pricing, and support that lasts the entire life of your loan. Here's what sets us apart."
           align="center"
         />
 
+        {/* Headline selling points */}
         <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.06] border border-white/[0.06]">
-          {features.map((f, i) => {
-            const Icon = f.icon;
+          {whyChooseUs.map((f, i) => {
+            const Icon = ICONS[f.icon] ?? Check;
             return (
               <motion.div
                 key={f.title}
@@ -74,15 +73,58 @@ export function WhyChooseUs() {
                 <h3 className="font-display text-xl font-bold text-white mb-3">
                   {f.title}
                 </h3>
-                <p className="text-sm text-white/60 leading-relaxed">
-                  {f.desc}
-                </p>
+                <p className="text-sm text-white/60 leading-relaxed">{f.desc}</p>
                 <div className="absolute top-6 right-6 font-display text-5xl font-bold text-white/[0.04] group-hover:text-brand-red/20 transition-colors">
                   {String(i + 1).padStart(2, '0')}
                 </div>
               </motion.div>
             );
           })}
+        </div>
+
+        {/* Assurance Cover — quality / inspection guarantees */}
+        <div className="mt-20">
+          <div className="text-center">
+            <span className="inline-flex items-center gap-2">
+              <span className="h-px w-8 bg-brand-red" />
+              <span className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-red">
+                Buy&amp;Drive Assurance Cover
+              </span>
+              <span className="h-px w-8 bg-brand-red" />
+            </span>
+            <h3 className="mt-4 display-heading text-2xl md:text-3xl text-white">
+              Every car, fully inspected &amp;{' '}
+              <span className="italic text-brand-red">guaranteed.</span>
+            </h3>
+          </div>
+
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {assuranceCover.map((f, i) => {
+              const Icon = ICONS[f.icon] ?? Check;
+              return (
+                <motion.div
+                  key={f.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ duration: 0.4, delay: (i % 3) * 0.08 }}
+                  className="flex items-start gap-4 rounded-2xl border border-white/[0.07] bg-brand-black p-5"
+                >
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-emerald-500/10 text-emerald-400">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <h4 className="font-display text-base font-bold text-white">
+                      {f.title}
+                    </h4>
+                    <p className="mt-1 text-xs leading-relaxed text-white/55">
+                      {f.desc}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
