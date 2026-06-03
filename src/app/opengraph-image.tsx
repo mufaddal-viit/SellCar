@@ -1,9 +1,15 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { ImageResponse } from 'next/og';
 import { siteConfig } from '@/content/site';
 
 export const alt = `${siteConfig.name} — ${siteConfig.tagline}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
+
+const markDataUri = `data:image/png;base64,${readFileSync(
+  join(process.cwd(), 'public', 'logo-mark.png'),
+).toString('base64')}`;
 
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -23,33 +29,9 @@ export default function OpengraphImage() {
         }}
       >
         {/* Brand row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <div
-            style={{
-              width: 72,
-              height: 72,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: '#E10600',
-              borderRadius: 16,
-            }}
-          >
-            <svg
-              width="44"
-              height="44"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M5 17h14M7 17v-5l2-4h6l2 4v5M9 17v2M15 17v2" />
-              <circle cx="8" cy="14" r="1.2" fill="white" />
-              <circle cx="16" cy="14" r="1.2" fill="white" />
-            </svg>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={markDataUri} width={84} height={84} alt="" />
           <div
             style={{
               fontSize: 40,

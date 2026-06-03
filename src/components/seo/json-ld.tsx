@@ -17,7 +17,7 @@ export function OrganizationJsonLd() {
       streetAddress: siteConfig.contact.address,
       addressCountry: 'AE',
     },
-    sameAs: Object.values(siteConfig.social),
+    sameAs: Object.values(siteConfig.social).filter(Boolean),
   };
   return (
     <script

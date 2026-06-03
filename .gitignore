@@ -9,7 +9,11 @@ build
 *.log
 .vercel
 next-env.d.ts
+*.tsbuildinfo
 .claude/
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# Local car-import staging — image/video folders are not committed (cars.json is)
+/cars-import/*/
 

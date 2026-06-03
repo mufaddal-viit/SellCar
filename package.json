@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "import:cars": "tsx scripts/import-cars.ts",
+    "cars:prune": "tsx scripts/prune-cars.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

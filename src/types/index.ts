@@ -24,6 +24,13 @@ export interface Car {
   status?: CarStatus;
   published?: boolean;
   soldAt?: string;
+  // Finance offers / selling points
+  priceType?: 'Price' | 'Finance';
+  monthlyApprox?: boolean;
+  freeInsurance?: boolean;
+  freeRegistration?: boolean;
+  zeroDownpayment?: boolean;
+  firstPaymentAfter2Months?: boolean;
 }
 
 export type CarStatus = 'available' | 'reserved' | 'sold';

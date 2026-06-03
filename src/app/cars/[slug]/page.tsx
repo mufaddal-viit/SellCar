@@ -20,7 +20,7 @@ import { EMICalculator } from '@/components/emi/emi-calculator';
 import { Badge } from '@/components/ui/badge';
 import { VehicleJsonLd, BreadcrumbJsonLd } from '@/components/seo/json-ld';
 import { getCarBySlug, getRelatedCars, getCars } from '@/server/cars';
-import { formatPrice, formatEMI } from '@/lib/utils';
+import { formatPrice, formatEMI, carHighlights } from '@/lib/utils';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -59,6 +59,7 @@ export default async function CarDetailPage({ params }: PageProps) {
   const related = await getRelatedCars(slug);
   const isSold = car.status === 'sold';
   const isReserved = car.status === 'reserved';
+  const highlights = carHighlights(car);
 
   return (
     <article className="bg-brand-black">
@@ -149,6 +150,9 @@ export default async function CarDetailPage({ params }: PageProps) {
                     EMI from
                   </div>
                   <div className="mt-1 font-display text-4xl font-bold text-brand-red">
+                    {car.monthlyApprox && (
+                      <span className="text-brand-red/60">≈ </span>
+                    )}
                     {formatEMI(car.emiFrom)}
                     <span className="text-sm text-white/50 font-medium">
                       /month
@@ -157,7 +161,7 @@ export default async function CarDetailPage({ params }: PageProps) {
                 </div>
                 <div className="text-right">
                   <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-white/50">
-                    On-Road Price
+                    {car.priceType === 'Finance' ? 'Finance Price' : 'Cash Price'}
                   </div>
                   <div className="mt-1 font-display text-2xl font-bold text-white">
                     {formatPrice(car.price)}
@@ -167,6 +171,19 @@ export default async function CarDetailPage({ params }: PageProps) {
               <div className="mt-4 pt-4 border-t border-white/[0.06] text-xs text-white/50">
                 Down payment from {formatPrice(car.downPayment)} · Tenure up to {car.tenure} months
               </div>
+              {highlights.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {highlights.map((h) => (
+                    <span
+                      key={h}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-brand-red/10 px-3 py-1 text-xs font-medium text-brand-red"
+                    >
+                      <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
+                      {h}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <CarCta

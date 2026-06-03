@@ -40,6 +40,15 @@ model Car {
   status       String    @default("available")
   published    Boolean   @default(true)
   soldAt       DateTime?
+
+  // Finance offers / selling points
+  priceType                String  @default("Price") // "Price" | "Finance"
+  monthlyApprox            Boolean @default(true)
+  freeInsurance            Boolean @default(false)
+  freeRegistration         Boolean @default(false)
+  zeroDownpayment          Boolean @default(false)
+  firstPaymentAfter2Months Boolean @default(false)
+
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 

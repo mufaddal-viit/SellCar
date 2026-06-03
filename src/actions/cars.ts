@@ -79,6 +79,12 @@ export async function saveCar(
     featured: data.featured,
     status: data.status,
     published: data.published,
+    priceType: data.priceType,
+    monthlyApprox: data.monthlyApprox,
+    freeInsurance: data.freeInsurance,
+    freeRegistration: data.freeRegistration,
+    zeroDownpayment: data.zeroDownpayment,
+    firstPaymentAfter2Months: data.firstPaymentAfter2Months,
   };
 
   if (!id) {

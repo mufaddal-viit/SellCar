@@ -84,7 +84,7 @@ export function Footer() {
           <div className="flex items-center gap-2">
             {Object.entries(siteConfig.social).map(([k, url]) => {
               const Icon = socialIcons[k as keyof typeof socialIcons];
-              if (!Icon) return null;
+              if (!Icon || !url) return null;
               return (
                 <a
                   key={k}

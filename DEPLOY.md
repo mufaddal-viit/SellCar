@@ -23,6 +23,17 @@ git push origin master
 
 ---
 
+## Pre-push checklist
+
+- [ ] All env vars from the table below are set in **Vercel → Settings → Environment Variables** (Production + Preview). `.env` is **not** committed.
+- [ ] `MONGODB_URI` points at your real Atlas cluster; Atlas network access allows Vercel (`0.0.0.0/0`).
+- [ ] `AUTH_SECRET` is a fresh 32-byte random hex, and `ADMIN_PASSWORD` is strong.
+- [ ] Both `NEXT_PUBLIC_CLOUDINARY_*` vars are set (the upload widget needs them in the browser).
+- [ ] `NEXT_PUBLIC_SITE_URL` is your production domain (used for SEO, sitemap, OG tags).
+- [ ] `npm run build` passes locally.
+
+> Without `MONGODB_URI`, the site falls back to bundled demo data and the admin can't save — so make sure it's set in Production.
+
 ## Step 2 — Import into Vercel
 
 1. Go to [vercel.com/new](https://vercel.com/new).
@@ -52,6 +63,7 @@ Add these in **Project Settings → Environment Variables** (or during the impor
 | `CLOUDINARY_API_SECRET` | ✅ for media | `abcd…` | Cloudinary API secret — **server only, never public** |
 | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | ✅ for media | `mycloud` | Same cloud name, exposed to the upload widget |
 | `NEXT_PUBLIC_CLOUDINARY_API_KEY` | ✅ for media | `1234…` | Same API key, exposed to the upload widget |
+| `CLOUDINARY_FOLDER_NAME` | optional | `carimages` | Cloudinary folder uploads are stored in (default `driveeasy/cars`) |
 | `ADMIN_USERNAME` | ✅ for admin | `admin` | Admin login username |
 | `ADMIN_PASSWORD` | ✅ for admin | strong password | Admin login password |
 | `AUTH_SECRET` | ✅ for admin | 32-byte hex | Signs the admin session cookie. Generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
@@ -62,17 +74,34 @@ For each variable, tick **Production**, **Preview**, and **Development** so it's
 
 ## Step 3.5 — Database & Cloudinary setup
 
-The admin panel (`/admin`) is backed by **MongoDB** (data) and **Cloudinary** (photos/videos).
+The site reads cars from **MongoDB**; photos/videos live on **Cloudinary**.
 
-1. **MongoDB Atlas** — create a free cluster, a database user, and allow network access (`0.0.0.0/0` for Vercel, or Vercel's IP ranges). Copy the `mongodb+srv://…` connection string into `MONGODB_URI`.
-2. **Cloudinary** — create a free account; copy the cloud name, API key, and API secret from the dashboard into the matching env vars.
-3. **Seed the initial inventory** (one-time) — with `MONGODB_URI` set in your local `.env`, run:
-   ```bash
-   npm run db:seed
-   ```
-   This upserts the 8 demo cars into the DB (idempotent — safe to re-run). After seeding, manage everything from `/admin`.
+1. **MongoDB Atlas** — create a cluster, a database user, and allow network access (`0.0.0.0/0` for Vercel, or Vercel's IP ranges). Put the `mongodb+srv://…` string in `MONGODB_URI` (a DB name is added automatically if the URI omits one).
+2. **Cloudinary** — copy the cloud name, API key, and API secret into the matching env vars (both the server `CLOUDINARY_*` and the public `NEXT_PUBLIC_CLOUDINARY_*`).
 
 > The Prisma client is generated automatically on `npm install` (`postinstall`) and during the build, so no manual `prisma generate` is needed on Vercel.
+
+---
+
+## Managing inventory — how new cars go live
+
+There are two ways to add cars, and **both show up on the live site without a redeploy**:
+
+### A) The admin panel (day-to-day) — instant
+Sign in at `/admin`, add/edit a car, upload photos, hit **Save**. The save revalidates the public cache (`revalidateTag('cars')`), so the change appears on the live site **immediately** on the next page view. Use status (available/reserved/sold), the **Published** toggle (drafts stay hidden), and **Featured** to control visibility.
+
+### B) Bulk importer (initial load / large batches)
+Run **locally**, pointed at your **production** database:
+
+```bash
+# .env has the PRODUCTION MONGODB_URI + CLOUDINARY_* vars
+npm run import:cars      # uploads cars-import/<folder>/ images → Cloudinary, upserts cars by slug
+npm run cars:prune -- --yes   # (optional) delete cars no longer in cardetails.json
+```
+
+Because the importer is a CLI (not the running server), imported cars appear on the live site via **ISR within ~5 minutes**, or instantly if you trigger a redeploy. See [cars-import/README.md](../cars-import/README.md).
+
+> Caching model: public pages are statically served and **revalidate every 5 minutes**, and are busted **instantly** by any admin save. New car detail pages that didn't exist at build time render on-demand (`dynamicParams`).
 
 ---
 

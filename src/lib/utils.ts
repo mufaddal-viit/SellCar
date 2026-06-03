@@ -34,6 +34,23 @@ export function calculateTotalInterest(
   return emi * tenureMonths - principal;
 }
 
+interface OfferFlags {
+  zeroDownpayment?: boolean;
+  freeInsurance?: boolean;
+  freeRegistration?: boolean;
+  firstPaymentAfter2Months?: boolean;
+}
+
+/** Active finance offers for a car, as short display labels. */
+export function carHighlights(car: OfferFlags): string[] {
+  const out: string[] = [];
+  if (car.zeroDownpayment) out.push('0% Down Payment');
+  if (car.freeInsurance) out.push('Free Insurance');
+  if (car.freeRegistration) out.push('Free Registration');
+  if (car.firstPaymentAfter2Months) out.push('1st Payment in 2 Months');
+  return out;
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()

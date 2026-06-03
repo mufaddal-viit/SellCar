@@ -51,6 +51,12 @@ function serialize(doc: DbCar): AdminCar {
     status: doc.status as CarStatus,
     published: doc.published,
     soldAt: doc.soldAt ? doc.soldAt.toISOString() : undefined,
+    priceType: doc.priceType as 'Price' | 'Finance',
+    monthlyApprox: doc.monthlyApprox,
+    freeInsurance: doc.freeInsurance,
+    freeRegistration: doc.freeRegistration,
+    zeroDownpayment: doc.zeroDownpayment,
+    firstPaymentAfter2Months: doc.firstPaymentAfter2Months,
     imagesFull,
     videosFull,
   };

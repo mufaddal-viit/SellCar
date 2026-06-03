@@ -46,6 +46,12 @@ export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: s
     status: car?.status ?? 'available',
     featured: car?.featured ?? false,
     published: car?.published ?? true,
+    priceType: car?.priceType ?? 'Price',
+    monthlyApprox: car?.monthlyApprox ?? true,
+    freeInsurance: car?.freeInsurance ?? false,
+    freeRegistration: car?.freeRegistration ?? false,
+    zeroDownpayment: car?.zeroDownpayment ?? false,
+    firstPaymentAfter2Months: car?.firstPaymentAfter2Months ?? false,
   });
 
   const [features, setFeatures] = useState<string[]>(car?.features ?? []);
@@ -84,6 +90,12 @@ export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: s
       featured: f.featured,
       status: f.status as CarInput['status'],
       published: f.published,
+      priceType: f.priceType as CarInput['priceType'],
+      monthlyApprox: f.monthlyApprox,
+      freeInsurance: f.freeInsurance,
+      freeRegistration: f.freeRegistration,
+      zeroDownpayment: f.zeroDownpayment,
+      firstPaymentAfter2Months: f.firstPaymentAfter2Months,
       images,
       videos,
     };
@@ -241,6 +253,36 @@ export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: s
           </FieldWrap>
           <FieldWrap label="Published">
             <Toggle checked={f.published} onChange={(v) => set('published', v)} label="Visible on site" />
+          </FieldWrap>
+        </Grid>
+      </Section>
+
+      <Section title="Offers & Finance">
+        <Grid>
+          <FieldWrap label="Price Type">
+            <select className={selectClass} value={f.priceType} onChange={(e) => set('priceType', e.target.value)}>
+              <option value="Price">Cash Price</option>
+              <option value="Finance">Finance Price</option>
+            </select>
+          </FieldWrap>
+          <FieldWrap label="Monthly is approx.">
+            <Toggle checked={f.monthlyApprox} onChange={(v) => set('monthlyApprox', v)} label="Show ≈ on EMI" />
+          </FieldWrap>
+          <FieldWrap label="Zero Down Payment">
+            <Toggle checked={f.zeroDownpayment} onChange={(v) => set('zeroDownpayment', v)} label="0% down" />
+          </FieldWrap>
+          <FieldWrap label="Free Insurance">
+            <Toggle checked={f.freeInsurance} onChange={(v) => set('freeInsurance', v)} label="Included" />
+          </FieldWrap>
+          <FieldWrap label="Free Registration">
+            <Toggle checked={f.freeRegistration} onChange={(v) => set('freeRegistration', v)} label="Included" />
+          </FieldWrap>
+          <FieldWrap label="1st Payment in 2 Months">
+            <Toggle
+              checked={f.firstPaymentAfter2Months}
+              onChange={(v) => set('firstPaymentAfter2Months', v)}
+              label="Deferred start"
+            />
           </FieldWrap>
         </Grid>
       </Section>

@@ -29,6 +29,13 @@ export const carInputSchema = z.object({
   featured: z.coerce.boolean().default(false),
   status: z.enum(['available', 'reserved', 'sold']).default('available'),
   published: z.coerce.boolean().default(true),
+  // Finance offers
+  priceType: z.enum(['Price', 'Finance']).default('Price'),
+  monthlyApprox: z.coerce.boolean().default(true),
+  freeInsurance: z.coerce.boolean().default(false),
+  freeRegistration: z.coerce.boolean().default(false),
+  zeroDownpayment: z.coerce.boolean().default(false),
+  firstPaymentAfter2Months: z.coerce.boolean().default(false),
   images: z.array(mediaSchema).default([]),
   videos: z.array(mediaSchema).default([]),
 });

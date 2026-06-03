@@ -1,14 +1,14 @@
 import type { SiteConfig, NavItem } from '@/types';
 
 export const siteConfig: SiteConfig = {
-  name: 'DriveEasy EMI',
+  name: 'Buy&Drive Cars',
   tagline: 'Drive Your Dream. Pay With Ease.',
   description:
     "The UAE's most trusted car finance platform. Choose from 500+ certified vehicles with flexible monthly installments starting at just 0% down payment. Fastest approvals, lowest profit rates.",
   url:
     process.env.NEXT_PUBLIC_SITE_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://driveeasy-emi.ae'),
-  ogImage: '/og-image.jpg',
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://buyanddrivecars.ae'),
+  ogImage: '/logo.png',
   keywords: [
     'car finance UAE',
     'car loan Dubai',
@@ -26,19 +26,20 @@ export const siteConfig: SiteConfig = {
   contact: {
     phone: process.env.NEXT_PUBLIC_PHONE || '+971 4 555 0000',
     whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || '971555550000',
-    email: 'hello@driveeasy-emi.ae',
+    email: 'hello@buyanddrivecars.ae',
     address: 'Office 1204, Burj Al Salam, Sheikh Zayed Road, Dubai, UAE',
     mapUrl: 'https://maps.google.com/?q=Sheikh+Zayed+Road+Dubai',
   },
   social: {
-    facebook: 'https://facebook.com/driveeasyemiae',
-    instagram: 'https://instagram.com/driveeasyemiae',
-    twitter: 'https://twitter.com/driveeasyemiae',
-    youtube: 'https://youtube.com/@driveeasyemiae',
-    linkedin: 'https://linkedin.com/company/driveeasyemiae',
+    facebook: 'https://www.facebook.com/share/18dCeUbmJp/?mibextid=wwXIfr',
+    instagram:
+      'https://www.instagram.com/buyndriveusedcars?igsh=YWttbjgxZ3dianFt&utm_source=qr',
+    twitter: '',
+    youtube: '',
+    linkedin: '',
   },
   business: {
-    name: 'DriveEasy Auto Finance LLC',
+    name: 'Buy&Drive Cars Auto Finance LLC',
     foundedYear: 2014,
     branches: 12,
     customers: '35,000+',

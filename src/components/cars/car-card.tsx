@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Fuel, Cog, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { formatPrice, formatEMI } from '@/lib/utils';
+import { formatPrice, formatEMI, carHighlights } from '@/lib/utils';
 import type { Car } from '@/types';
 
 interface CarCardProps {
@@ -14,6 +14,7 @@ interface CarCardProps {
 }
 
 export function CarCard({ car, index = 0 }: CarCardProps) {
+  const highlights = carHighlights(car);
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -77,19 +78,38 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
             />
           </div>
 
+          {highlights.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {highlights.slice(0, 2).map((h) => (
+                <span
+                  key={h}
+                  className="rounded-full bg-brand-red/10 px-2 py-0.5 text-[10px] font-medium text-brand-red"
+                >
+                  {h}
+                </span>
+              ))}
+              {highlights.length > 2 && (
+                <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-medium text-white/50">
+                  +{highlights.length - 2}
+                </span>
+              )}
+            </div>
+          )}
+
           <div className="mt-auto flex items-end justify-between border-t border-white/[0.06] pt-5">
             <div>
               <div className="text-[10px] font-medium uppercase tracking-widest text-white/40">
                 EMI from
               </div>
               <div className="mt-0.5 font-display text-xl font-bold text-white">
+                {car.monthlyApprox && <span className="text-white/45">≈ </span>}
                 {formatEMI(car.emiFrom)}
                 <span className="text-xs font-medium text-white/45">/mo</span>
               </div>
             </div>
             <div className="text-right">
               <div className="text-[10px] font-medium uppercase tracking-widest text-white/40">
-                On-Road
+                {car.priceType === 'Finance' ? 'Finance' : 'Price'}
               </div>
               <div className="mt-0.5 text-sm font-semibold text-white/75">
                 {formatPrice(car.price)}
