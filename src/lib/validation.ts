@@ -52,3 +52,63 @@ export const leadInputSchema = z.object({
 });
 
 export type LeadInput = z.infer<typeof leadInputSchema>;
+
+// ── Applications (car finance) ───────────────────────────────────────────────
+
+export const DOC_KINDS = [
+  'emirates_id',
+  'visa',
+  'passport',
+  'salary_certificate',
+  'bank_statement',
+] as const;
+export type DocKind = (typeof DOC_KINDS)[number];
+
+/** Documents required to submit (bank statement is optional — IBAN can substitute). */
+export const REQUIRED_DOC_KINDS: DocKind[] = [
+  'emirates_id',
+  'visa',
+  'passport',
+  'salary_certificate',
+];
+
+const optStr = z.string().trim().optional().or(z.literal(''));
+
+export const applicationDocSchema = z.object({
+  kind: z.enum(DOC_KINDS),
+  publicId: z.string().min(1),
+  resourceType: z.string().default('image'),
+  format: z.string().default(''),
+});
+
+export const applicationSubmitSchema = z.object({
+  carId: z.string().optional(),
+  carName: z.string().optional(),
+  name: z.string().trim().min(2, 'Please enter your name'),
+  mobile: z.string().trim().min(6, 'Please enter a valid mobile number'),
+  email: z.string().trim().email('Invalid email'),
+  homeMobile: optStr,
+  mother: optStr,
+  flat: optStr,
+  building: optStr,
+  street: optStr,
+  area: optStr,
+  city: optStr,
+  homeAddress: optStr,
+  officeAddress: optStr,
+  officeLandline: optStr,
+  salaryDate: optStr,
+  bankName: optStr,
+  iban: optStr,
+  loanInstallment: optStr,
+  hasCards: optStr,
+  cardLimit: optStr,
+  cashLoan: optStr,
+  ref1Name: optStr,
+  ref1Mobile: optStr,
+  ref2Name: optStr,
+  ref2Mobile: optStr,
+  documents: z.array(applicationDocSchema).default([]),
+});
+
+export type ApplicationInput = z.infer<typeof applicationSubmitSchema>;

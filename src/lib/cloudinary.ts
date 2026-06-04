@@ -24,6 +24,41 @@ export function signParams(paramsToSign: Record<string, unknown>): string {
   );
 }
 
+export const APPLICATIONS_FOLDER = 'applications';
+
+export function slugifyName(name: string): string {
+  return (
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 40) || 'applicant'
+  );
+}
+
+/** Per-applicant private document folder: applications/<name>_<appId>. */
+export function applicationFolder(name: string, appId: string): string {
+  return `${APPLICATIONS_FOLDER}/${slugifyName(name)}_${appId}`;
+}
+
+/**
+ * Signed, time-limited delivery URL for a private (authenticated) KYC document.
+ * Used only server-side in the admin — these assets are not publicly accessible.
+ */
+export function signedDocUrl(
+  publicId: string,
+  resourceType = 'image',
+  format?: string,
+): string {
+  return cloudinary.url(publicId, {
+    resource_type: resourceType || 'image',
+    type: 'authenticated',
+    sign_url: true,
+    secure: true,
+    ...(format ? { format } : {}),
+  });
+}
+
 /** Remove an asset from Cloudinary (best-effort). */
 export async function destroyAsset(
   publicId: string,
@@ -34,6 +69,19 @@ export async function destroyAsset(
     await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
   } catch {
     // Non-fatal: the DB record is the source of truth for the site.
+  }
+}
+
+/** Remove a private (authenticated) document asset. */
+export async function destroyDoc(publicId: string, resourceType = 'image') {
+  if (!hasCloudinary || !publicId) return;
+  try {
+    await cloudinary.uploader.destroy(publicId, {
+      resource_type: resourceType || 'image',
+      type: 'authenticated',
+    });
+  } catch {
+    // best-effort
   }
 }
 

@@ -66,7 +66,10 @@ Add these in **Project Settings → Environment Variables** (or during the impor
 | `CLOUDINARY_FOLDER_NAME` | optional | `carimages` | Cloudinary folder uploads are stored in (default `driveeasy/cars`) |
 | `ADMIN_USERNAME` | ✅ for admin | `admin` | Admin login username |
 | `ADMIN_PASSWORD` | ✅ for admin | strong password | Admin login password |
-| `AUTH_SECRET` | ✅ for admin | 32-byte hex | Signs the admin session cookie. Generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
+| `AUTH_SECRET` | ✅ for admin | 32-byte hex | Signs the admin session cookie + OTP/email-verify tokens. Generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
+| `EMAIL_USER` | ✅ for /services | `you@gmail.com` | Gmail address that sends OTP codes |
+| `EMAIL_APP_PASSWORD` | ✅ for /services | app password | Google **App Password** (not your login password) — myaccount.google.com/apppasswords |
+| `EMAIL_FROM` | optional | `"Buy&Drive Cars" <you@gmail.com>` | Display From; defaults to EMAIL_USER |
 
 For each variable, tick **Production**, **Preview**, and **Development** so it's available everywhere.
 

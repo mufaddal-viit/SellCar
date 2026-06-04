@@ -12,6 +12,7 @@ import {
   deleteCar,
 } from '@/actions/cars';
 import { formatPrice, formatEMI } from '@/lib/utils';
+import { SelectField } from '@/components/ui/select-field';
 import type { AdminCar } from '@/server/cars';
 import type { CarStatus } from '@/types';
 
@@ -80,20 +81,13 @@ export function CarsTable({ cars }: { cars: AdminCar[] }) {
                   <div className="text-xs text-white/40">{formatEMI(car.emiFrom)}/mo</div>
                 </td>
                 <td className="p-4">
-                  <select
+                  <SelectField
                     value={car.status ?? 'available'}
                     disabled={busy}
-                    onChange={(e) =>
-                      run(car.id, () => setStatus(car.id, e.target.value as CarStatus))
-                    }
-                    className="rounded-lg border border-white/10 bg-brand-black px-2 py-1.5 text-xs capitalize text-white focus:border-brand-red focus:outline-none"
-                  >
-                    {STATUSES.map((s) => (
-                      <option key={s} value={s} className="capitalize">
-                        {s}
-                      </option>
-                    ))}
-                  </select>
+                    onValueChange={(v) => run(car.id, () => setStatus(car.id, v as CarStatus))}
+                    options={STATUSES}
+                    className="h-8 px-2 text-xs capitalize"
+                  />
                 </td>
                 <td className="p-4">
                   <button

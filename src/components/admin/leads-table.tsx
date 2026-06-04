@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { Trash2, Phone, Mail, MessageCircle } from 'lucide-react';
 import { updateLeadStatus, deleteLead } from '@/actions/leads';
+import { SelectField } from '@/components/ui/select-field';
 import type { Lead, LeadStatus } from '@/types';
 
 const STATUSES: LeadStatus[] = ['new', 'contacted', 'closed'];
@@ -94,16 +95,13 @@ export function LeadsTable({ leads }: { leads: Lead[] }) {
             )}
 
             <div className="mt-4 flex items-center justify-between gap-3">
-              <select
+              <SelectField
                 value={status}
                 disabled={busy}
-                onChange={(e) => run(lead.id, () => updateLeadStatus(lead.id, e.target.value as LeadStatus))}
-                className="rounded-lg border border-white/10 bg-brand-black px-3 py-1.5 text-xs capitalize text-white focus:border-brand-red focus:outline-none"
-              >
-                {STATUSES.map((s) => (
-                  <option key={s} value={s} className="capitalize">{s}</option>
-                ))}
-              </select>
+                onValueChange={(v) => run(lead.id, () => updateLeadStatus(lead.id, v as LeadStatus))}
+                options={STATUSES}
+                className="h-9 px-3 text-xs capitalize"
+              />
               <button
                 type="button"
                 disabled={busy}
