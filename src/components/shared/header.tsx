@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Menu, X, Phone } from 'lucide-react';
 import { Logo } from './logo';
+import { SocialLinks } from './social-links';
 import { Button } from '@/components/ui/button';
 import { mainNav, siteConfig } from '@/content/site';
 import { useUI } from '@/context';
@@ -65,6 +66,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2 md:gap-3">
+          <SocialLinks size="sm" className="hidden xl:flex" />
           <a
             href={`tel:${siteConfig.contact.phone}`}
             className="hidden md:inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors"
@@ -130,6 +132,7 @@ export function Header() {
             <Button asChild className="w-full">
               <Link href="/cars">Get Started</Link>
             </Button>
+            <SocialLinks className="px-4 pt-1" />
           </div>
         </div>
       </div>

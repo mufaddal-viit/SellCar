@@ -67,7 +67,7 @@ export default function OpengraphImage() {
               lineHeight: 1.35,
             }}
           >
-            500+ certified cars on flexible EMI · Approvals in 24 hours · UAE
+            Certified cars on flexible EMI · Approvals in 5-7 days · UAE
           </div>
         </div>
 

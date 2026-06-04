@@ -46,7 +46,7 @@ export function Requirements() {
             </h2>
             <p className="mt-5 max-w-md leading-relaxed text-white/60">
               No paperwork mountains. Bring a few essentials and we&apos;ll do the
-              rest — most applications are approved within 24 hours.
+              rest — most applications are approved within 5-7 days.
             </p>
             <div className="mt-8">
               <Button asChild size="lg">

@@ -86,7 +86,7 @@ const config: Config = {
       animation: {
         'fade-in': 'fade-in 0.6s ease-out forwards',
         'slide-in-right': 'slide-in-right 0.6s ease-out forwards',
-        'marquee': 'marquee 30s linear infinite',
+        'marquee': 'marquee 50s linear infinite',
         'shimmer': 'shimmer 2.5s linear infinite',
       },
       backgroundImage: {

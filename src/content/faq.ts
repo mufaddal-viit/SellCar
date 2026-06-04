@@ -11,7 +11,7 @@ export const faqs: FAQ[] = [
   },
   {
     q: 'How long does finance approval take?',
-    a: 'Most applications are approved within 24 hours of document submission. UAE nationals and pre-approved customers can drive home in as little as 4 hours.',
+    a: 'Most applications are approved within 5-7 days of document submission. UAE nationals and pre-approved customers can often be approved sooner.',
   },
   {
     q: 'Can I settle my loan early?',

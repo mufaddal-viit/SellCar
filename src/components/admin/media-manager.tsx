@@ -1,8 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { CldUploadWidget } from 'next-cloudinary';
-import { UploadCloud, X, ArrowLeft } from 'lucide-react';
+import {
+  UploadCloud,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  GripVertical,
+} from 'lucide-react';
 import type { MediaAsset } from '@/types';
 
 interface Props {
@@ -22,80 +30,142 @@ interface UploadInfo {
 }
 
 export function MediaManager({ label, hint, resourceType, folder, value, onChange }: Props) {
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
+  const isImage = resourceType === 'image';
+
   const add = (info: UploadInfo) => {
     if (value.some((m) => m.publicId === info.public_id)) return;
     onChange([
       ...value,
-      {
-        url: info.secure_url,
-        publicId: info.public_id,
-        width: info.width,
-        height: info.height,
-      },
+      { url: info.secure_url, publicId: info.public_id, width: info.width, height: info.height },
     ]);
   };
 
   const remove = (publicId: string) =>
     onChange(value.filter((m) => m.publicId !== publicId));
 
-  const moveToFront = (index: number) => {
-    if (index <= 0) return;
+  /** Move the item at `from` to position `to` (used by drag-drop and arrows). */
+  const reorder = (from: number, to: number) => {
+    if (from === to || from < 0 || to < 0 || from >= value.length || to >= value.length) return;
     const next = [...value];
-    const [item] = next.splice(index, 1);
-    next.unshift(item);
+    const [item] = next.splice(from, 1);
+    next.splice(to, 0, item);
     onChange(next);
   };
+  const move = (i: number, dir: -1 | 1) => reorder(i, i + dir);
+
+  const handleDrop = (to: number) => {
+    if (dragIndex !== null) reorder(dragIndex, to);
+    setDragIndex(null);
+    setOverIndex(null);
+  };
+
+  const ctrlBtn =
+    'grid h-7 w-7 place-items-center rounded-md bg-black/70 text-white transition-colors disabled:opacity-30 disabled:hover:bg-black/70';
 
   return (
     <div>
-      <div className="mb-2 flex items-baseline justify-between">
+      <div className="mb-2 flex items-baseline justify-between gap-3">
         <span className="text-sm font-medium text-white">{label}</span>
-        {hint && <span className="text-xs text-white/40">{hint}</span>}
+        <span className="text-xs text-white/40">
+          {hint ?? (isImage ? 'Drag to reorder · first photo is the cover' : 'Drag to reorder')}
+        </span>
       </div>
 
       {value.length > 0 && (
         <div className="mb-3 grid grid-cols-3 gap-3 sm:grid-cols-4">
-          {value.map((m, i) => (
-            <div
-              key={m.publicId || m.url}
-              className="group relative aspect-square overflow-hidden rounded-lg border border-white/10 bg-brand-black-elevated"
-            >
-              {resourceType === 'image' ? (
-                <Image src={m.url} alt="" fill sizes="160px" className="object-cover" />
-              ) : (
-                <video src={m.url} className="h-full w-full object-cover" muted />
-              )}
+          {value.map((m, i) => {
+            const isCover = isImage && i === 0;
+            return (
+              <div
+                key={m.publicId || m.url}
+                draggable
+                onDragStart={() => setDragIndex(i)}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setOverIndex(i);
+                }}
+                onDrop={() => handleDrop(i)}
+                onDragEnd={() => {
+                  setDragIndex(null);
+                  setOverIndex(null);
+                }}
+                className={`group relative aspect-square cursor-grab overflow-hidden rounded-lg border bg-brand-black-elevated active:cursor-grabbing ${
+                  overIndex === i && dragIndex !== i
+                    ? 'border-brand-red'
+                    : 'border-white/10'
+                } ${dragIndex === i ? 'opacity-40' : ''}`}
+              >
+                {isImage ? (
+                  <Image src={m.url} alt="" fill sizes="160px" className="object-cover" />
+                ) : (
+                  <video src={m.url} className="h-full w-full object-cover" muted />
+                )}
 
-              {resourceType === 'image' && i === 0 && (
-                <span className="absolute left-1 top-1 rounded bg-brand-red px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
-                  Cover
+                {/* Order badge / cover label */}
+                <span
+                  className={`absolute left-1.5 top-1.5 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+                    isCover ? 'bg-brand-red text-white' : 'bg-black/70 text-white/90'
+                  }`}
+                >
+                  {isCover ? (
+                    <>
+                      <Star className="h-2.5 w-2.5" fill="currentColor" /> Cover
+                    </>
+                  ) : (
+                    i + 1
+                  )}
                 </span>
-              )}
 
-              <div className="absolute inset-x-1 bottom-1 flex justify-between opacity-0 transition-opacity group-hover:opacity-100">
-                {resourceType === 'image' && i > 0 ? (
+                {/* Drag affordance */}
+                <span className="absolute right-1.5 top-1.5 text-white/50 opacity-0 transition-opacity group-hover:opacity-100">
+                  <GripVertical className="h-4 w-4" />
+                </span>
+
+                {/* Controls */}
+                <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1 bg-gradient-to-t from-black/80 to-transparent p-1.5">
                   <button
                     type="button"
-                    onClick={() => moveToFront(i)}
-                    title="Make cover"
-                    className="grid h-6 w-6 place-items-center rounded bg-black/70 text-white hover:bg-black"
+                    onClick={() => move(i, -1)}
+                    disabled={i === 0}
+                    title="Move left"
+                    className={`${ctrlBtn} hover:bg-black`}
                   >
-                    <ArrowLeft className="h-3.5 w-3.5" />
+                    <ChevronLeft className="h-4 w-4" />
                   </button>
-                ) : (
-                  <span />
-                )}
-                <button
-                  type="button"
-                  onClick={() => remove(m.publicId)}
-                  title="Remove"
-                  className="grid h-6 w-6 place-items-center rounded bg-black/70 text-white hover:bg-red-600"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
+                  {isImage && (
+                    <button
+                      type="button"
+                      onClick={() => reorder(i, 0)}
+                      disabled={i === 0}
+                      title="Set as cover"
+                      className={`${ctrlBtn} hover:bg-brand-red`}
+                    >
+                      <Star className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => move(i, 1)}
+                    disabled={i === value.length - 1}
+                    title="Move right"
+                    className={`${ctrlBtn} hover:bg-black`}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => remove(m.publicId)}
+                    title="Remove"
+                    className={`${ctrlBtn} hover:bg-red-600`}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -120,7 +190,7 @@ export function MediaManager({ label, hint, resourceType, folder, value, onChang
             className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/15 py-4 text-sm text-white/60 transition-colors hover:border-brand-red/50 hover:text-white"
           >
             <UploadCloud className="h-4 w-4" />
-            Upload {resourceType === 'image' ? 'photos' : 'videos'}
+            Upload {isImage ? 'photos' : 'videos'}
           </button>
         )}
       </CldUploadWidget>

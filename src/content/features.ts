@@ -49,8 +49,8 @@ export const whyChooseUs: Feature[] = [
   },
   {
     icon: 'HeartHandshake',
-    title: 'Lifetime Service',
-    desc: 'Free annual servicing and roadside assistance for the entire duration of your loan.',
+    title: 'Dedicated Support',
+    desc: 'A personal advisor guides you from your first enquiry through to delivery — and beyond.',
   },
   {
     icon: 'Clock',

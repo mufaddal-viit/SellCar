@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Facebook, Instagram, Twitter, Youtube, Linkedin, ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react';
+import { ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react';
 import { Logo } from './logo';
+import { SocialLinks } from './social-links';
 import { siteConfig, footerLinks } from '@/content/site';
 
 export function Footer() {
@@ -11,14 +12,6 @@ export function Footer() {
   if (pathname?.startsWith('/admin')) return null;
 
   const year = new Date().getFullYear();
-
-  const socialIcons = {
-    facebook: Facebook,
-    instagram: Instagram,
-    twitter: Twitter,
-    youtube: Youtube,
-    linkedin: Linkedin,
-  };
 
   return (
     <footer className="relative bg-brand-black-soft border-t border-white/[0.06] overflow-hidden">
@@ -96,24 +89,7 @@ export function Footer() {
           <p className="text-xs text-white/40">
             © {year} {siteConfig.business.name}. All rights reserved.
           </p>
-          <div className="flex items-center gap-2">
-            {Object.entries(siteConfig.social).map(([k, url]) => {
-              const Icon = socialIcons[k as keyof typeof socialIcons];
-              if (!Icon || !url) return null;
-              return (
-                <a
-                  key={k}
-                  href={url}
-                  target="_blank"
-                  rel="noopener"
-                  aria-label={k}
-                  className="grid place-items-center w-9 h-9 rounded-full bg-white/[0.04] hover:bg-brand-red text-white/70 hover:text-white transition-colors"
-                >
-                  <Icon className="w-4 h-4" />
-                </a>
-              );
-            })}
-          </div>
+          <SocialLinks />
         </div>
       </div>
     </footer>

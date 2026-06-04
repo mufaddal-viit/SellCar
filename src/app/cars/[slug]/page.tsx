@@ -41,7 +41,7 @@ export async function generateMetadata({
   if (!car) return { title: 'Car not found' };
   return {
     title: `${car.name} on EMI from ${formatEMI(car.emiFrom)}/mo`,
-    description: `${car.description} Available on flexible EMI starting at ${formatEMI(car.emiFrom)}/month. Get approved in 24 hours.`,
+    description: `${car.description} Available on flexible EMI starting at ${formatEMI(car.emiFrom)}/month. Get approved in 5-7 days.`,
     alternates: { canonical: `/cars/${car.slug}` },
     openGraph: {
       title: `${car.name} — ${formatPrice(car.price)} | EMI from ${formatEMI(car.emiFrom)}/mo`,
@@ -72,7 +72,7 @@ export default async function CarDetailPage({ params }: PageProps) {
         ]}
       />
 
-      <div className="container-wide pt-8 pb-4">
+      <div className="container-wide pt-8 pb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <Link
           href="/cars"
           className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors"
@@ -80,6 +80,13 @@ export default async function CarDetailPage({ params }: PageProps) {
           <ArrowLeft className="w-4 h-4" />
           Back to all cars
         </Link>
+        <CarCta
+          carId={car.id}
+          carName={car.name}
+          emiFrom={car.emiFrom}
+          status={car.status}
+          size="sm"
+        />
       </div>
 
       <div className="container-wide py-8 lg:py-12">
@@ -186,12 +193,6 @@ export default async function CarDetailPage({ params }: PageProps) {
               )}
             </div>
 
-            <CarCta
-              carId={car.id}
-              carName={car.name}
-              emiFrom={car.emiFrom}
-              status={car.status}
-            />
           </div>
         </div>
       </div>

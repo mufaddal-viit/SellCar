@@ -84,7 +84,7 @@
   }
 
   .section {
-    @apply py-20 md:py-28 lg:py-32;
+    @apply py-14 sm:py-20 md:py-28 lg:py-32;
   }
 
   .display-heading {

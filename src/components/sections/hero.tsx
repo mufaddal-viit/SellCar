@@ -151,11 +151,11 @@ export function Hero() {
       <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-white/[0.06] bg-brand-black/60 backdrop-blur-xl">
         <div className="container-wide grid grid-cols-2 md:grid-cols-4 divide-x divide-white/[0.06]">
           {heroStats.map((s) => (
-            <div key={s.label} className="px-3 sm:px-6 py-5 md:py-7">
-              <div className="display-heading text-2xl sm:text-3xl md:text-4xl text-white">
+            <div key={s.label} className="px-3 py-3 sm:px-6 sm:py-5 md:py-7">
+              <div className="display-heading text-lg sm:text-2xl md:text-4xl text-white">
                 {s.value}
               </div>
-              <div className="mt-1 text-[10px] sm:text-xs font-medium uppercase tracking-widest text-white/50">
+              <div className="mt-0.5 sm:mt-1 text-[9px] sm:text-xs font-medium uppercase tracking-widest text-white/50">
                 {s.label}
               </div>
             </div>

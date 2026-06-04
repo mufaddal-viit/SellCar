@@ -1,4 +1,5 @@
 import { siteConfig } from '@/content/site';
+import { socialLinks } from '@/content/social';
 import type { Car } from '@/types';
 
 export function OrganizationJsonLd() {
@@ -17,7 +18,7 @@ export function OrganizationJsonLd() {
       streetAddress: siteConfig.contact.address,
       addressCountry: 'AE',
     },
-    sameAs: Object.values(siteConfig.social).filter(Boolean),
+    sameAs: socialLinks.map((s) => s.href),
   };
   return (
     <script

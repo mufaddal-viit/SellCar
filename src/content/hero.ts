@@ -27,6 +27,6 @@ export const heroSlides: HeroSlide[] = [
     subtitle:
     'Discover a smarter way to own the car you deserve. No compromises on quality, just smarter payments that fit your lifestyle.',
     image: '/hero/slide3.avif',
-    cta: { label: 'Explore EVs', href: '/cars?category=Electric' },
+    cta: { label: 'Explore Now', href: '/cars?category=Electric' },
   },
 ];

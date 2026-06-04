@@ -17,7 +17,7 @@ export default function ServicesPage() {
           eyebrow="Get Started"
           title="Apply for"
           highlight="car finance."
-          description="Fill in your details and upload your documents below. Our team will review your application and call you with a personalised offer — usually within 24 hours."
+          description="Fill in your details and upload your documents below. Our team will review your application and call you with a personalised offer — usually within 5-7 days."
         />
       </section>
       <section className="container-wide pb-24">

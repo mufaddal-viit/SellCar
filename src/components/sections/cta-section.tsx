@@ -40,7 +40,7 @@ export function CTASection() {
                 <span className="italic">is one EMI away.</span>
               </h2>
               <p className="mt-6 max-w-md text-white/90 text-lg leading-relaxed">
-                Get personalized EMI offers tailored to your profile. Approval in under 24 hours, zero hidden fees.
+                Get personalized EMI offers tailored to your profile. Approval in 5-7 days, zero hidden fees.
               </p>
             </div>
 

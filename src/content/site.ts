@@ -1,4 +1,5 @@
 import type { SiteConfig, NavItem } from '@/types';
+import { contactNumbers } from './social';
 
 export const siteConfig: SiteConfig = {
   name: 'Buy&Drive Cars',
@@ -24,8 +25,8 @@ export const siteConfig: SiteConfig = {
     'Islamic car finance',
   ],
   contact: {
-    phone: process.env.NEXT_PUBLIC_PHONE || '+971 4 555 0000',
-    whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || '971555550000',
+    phone: contactNumbers.phone,
+    whatsapp: contactNumbers.whatsapp,
     email: 'hello@buyanddrivecars.ae',
     address: 'Office 1204, Burj Al Salam, Sheikh Zayed Road, Dubai, UAE',
     mapUrl: 'https://maps.google.com/?q=Sheikh+Zayed+Road+Dubai',
@@ -89,6 +90,6 @@ export const footerLinks = {
 export const heroStats = [
   { label: 'Cars Financed', value: '1,200+' },
   { label: 'Approval Rate', value: '94%' },
-  { label: 'Profit Rate From', value: '1.99%' },
-  { label: 'Avg. Approval', value: '24 hrs' },
+  { label: 'Down Payment From', value: '0%' },
+  { label: 'Avg. Approval', value: '5-7 days' },
 ];
