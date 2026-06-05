@@ -24,6 +24,54 @@ export function signParams(paramsToSign: Record<string, unknown>): string {
   );
 }
 
+export const APPLICATIONS_FOLDER = 'applications';
+
+export function slugifyName(name: string): string {
+  return (
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 40) || 'applicant'
+  );
+}
+
+/** Per-applicant private document folder: applications/<name>_<appId>. */
+export function applicationFolder(name: string, appId: string): string {
+  return `${APPLICATIONS_FOLDER}/${slugifyName(name)}_${appId}`;
+}
+
+/** Signed delivery URL for a private (authenticated) KYC document — expires in 15 min. */
+export function signedDocUrl(
+  publicId: string,
+  resourceType = 'image',
+  format = '',
+): string {
+  const expiresAt = Math.floor(Date.now() / 1000) + 15 * 60; // 15 minutes
+  return cloudinary.utils.private_download_url(publicId, format || 'jpg', {
+    resource_type: resourceType || 'image',
+    type: 'authenticated',
+    expires_at: expiresAt,
+  });
+}
+
+/** Fetch the byte size of a private asset (server-side document-size enforcement). */
+export async function getAssetBytes(
+  publicId: string,
+  resourceType = 'image',
+): Promise<number | null> {
+  if (!hasCloudinary || !publicId) return null;
+  try {
+    const r = await cloudinary.api.resource(publicId, {
+      resource_type: resourceType || 'image',
+      type: 'authenticated',
+    });
+    return typeof r.bytes === 'number' ? r.bytes : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Remove an asset from Cloudinary (best-effort). */
 export async function destroyAsset(
   publicId: string,
@@ -34,6 +82,19 @@ export async function destroyAsset(
     await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
   } catch {
     // Non-fatal: the DB record is the source of truth for the site.
+  }
+}
+
+/** Remove a private (authenticated) document asset. */
+export async function destroyDoc(publicId: string, resourceType = 'image') {
+  if (!hasCloudinary || !publicId) return;
+  try {
+    await cloudinary.uploader.destroy(publicId, {
+      resource_type: resourceType || 'image',
+      type: 'authenticated',
+    });
+  } catch {
+    // best-effort
   }
 }
 

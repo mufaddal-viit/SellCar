@@ -52,11 +52,90 @@ model Car {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
+  applications Application[]
+
   @@index([brand])
   @@index([category])
   @@index([status])
   @@index([featured])
   @@index([published])
+}
+
+type ApplicationDoc {
+  kind         String // emirates_id | visa | passport | salary_certificate | bank_statement
+  publicId     String
+  resourceType String @default("image")
+  format       String @default("")
+}
+
+model Application {
+  // id is set explicitly (minted at email-verification) so we can name the
+  // Cloudinary document folder before the record exists.
+  id    String @id @map("_id") @db.ObjectId
+
+  // Applicant
+  name       String
+  mobile     String
+  email      String
+  homeMobile String?
+  mother     String?
+
+  // Address
+  flat        String?
+  building    String?
+  street      String?
+  area        String?
+  city        String?
+  homeAddress String?
+
+  // Employment
+  officeAddress  String?
+  officeLandline String?
+
+  // Banking
+  salaryDate String?
+  bankName   String?
+  iban       String?
+
+  // Obligations
+  loanInstallment String?
+  hasCards        String?
+  cardLimit       String?
+  cashLoan        String?
+
+  // References
+  ref1Name   String?
+  ref1Mobile String?
+  ref2Name   String?
+  ref2Mobile String?
+
+  documents ApplicationDoc[]
+
+  car     Car?    @relation(fields: [carId], references: [id])
+  carId   String? @db.ObjectId
+  carName String?
+
+  emailVerified Boolean  @default(true)
+  status        String   @default("submitted") // submitted | in_review | approved | rejected
+  reviewNote    String? // admin note / rejection reason, shown to the applicant
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status])
+  @@index([carId])
+  @@index([email])
+}
+
+model OtpToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  email      String   @unique
+  codeHash   String
+  expiresAt  DateTime
+  attempts   Int      @default(0)
+  sentCount  Int      @default(1)
+  lastSentAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Lead {

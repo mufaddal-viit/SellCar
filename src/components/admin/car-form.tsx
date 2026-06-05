@@ -8,6 +8,7 @@ import { MediaManager } from './media-manager';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { SelectField } from '@/components/ui/select-field';
 import type { AdminCar } from '@/server/cars';
 import type { CarInput } from '@/lib/validation';
 import type { MediaAsset } from '@/types';
@@ -17,9 +18,6 @@ const FUELS = ['Petrol', 'Diesel', 'Electric', 'Hybrid', 'CNG'];
 const TRANSMISSIONS = ['Automatic', 'Manual'];
 const BADGES = ['Hot', 'New', 'Popular', 'Best Deal'];
 const STATUSES = ['available', 'reserved', 'sold'];
-
-const selectClass =
-  'h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-base text-white focus:border-brand-red focus:outline-none';
 
 export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: string }) {
   const router = useRouter();
@@ -136,9 +134,7 @@ export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: s
             <Input type="number" value={f.year} onChange={(e) => set('year', e.target.value)} />
           </FieldWrap>
           <FieldWrap label="Category">
-            <select className={selectClass} value={f.category} onChange={(e) => set('category', e.target.value)}>
-              {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
-            </select>
+            <SelectField value={f.category} onValueChange={(v) => set('category', v)} options={CATEGORIES} />
           </FieldWrap>
         </Grid>
       </Section>
@@ -163,14 +159,10 @@ export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: s
       <Section title="Specifications">
         <Grid>
           <FieldWrap label="Fuel">
-            <select className={selectClass} value={f.fuel} onChange={(e) => set('fuel', e.target.value)}>
-              {FUELS.map((c) => <option key={c}>{c}</option>)}
-            </select>
+            <SelectField value={f.fuel} onValueChange={(v) => set('fuel', v)} options={FUELS} />
           </FieldWrap>
           <FieldWrap label="Transmission">
-            <select className={selectClass} value={f.transmission} onChange={(e) => set('transmission', e.target.value)}>
-              {TRANSMISSIONS.map((c) => <option key={c}>{c}</option>)}
-            </select>
+            <SelectField value={f.transmission} onValueChange={(v) => set('transmission', v)} options={TRANSMISSIONS} />
           </FieldWrap>
           <FieldWrap label="Mileage / Range">
             <Input value={f.mileage} onChange={(e) => set('mileage', e.target.value)} placeholder="14.5 km/l" />
@@ -238,15 +230,14 @@ export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: s
       <Section title="Listing Settings">
         <Grid>
           <FieldWrap label="Badge">
-            <select className={selectClass} value={f.badge} onChange={(e) => set('badge', e.target.value)}>
-              <option value="">None</option>
-              {BADGES.map((c) => <option key={c}>{c}</option>)}
-            </select>
+            <SelectField
+              value={f.badge || 'none'}
+              onValueChange={(v) => set('badge', v === 'none' ? '' : v)}
+              options={[{ value: 'none', label: 'None' }, ...BADGES.map((b) => ({ value: b, label: b }))]}
+            />
           </FieldWrap>
           <FieldWrap label="Status">
-            <select className={`${selectClass} capitalize`} value={f.status} onChange={(e) => set('status', e.target.value)}>
-              {STATUSES.map((c) => <option key={c} value={c} className="capitalize">{c}</option>)}
-            </select>
+            <SelectField value={f.status} onValueChange={(v) => set('status', v)} options={STATUSES} className="capitalize" />
           </FieldWrap>
           <FieldWrap label="Featured">
             <Toggle checked={f.featured} onChange={(v) => set('featured', v)} label="Show in featured" />
@@ -260,10 +251,14 @@ export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: s
       <Section title="Offers & Finance">
         <Grid>
           <FieldWrap label="Price Type">
-            <select className={selectClass} value={f.priceType} onChange={(e) => set('priceType', e.target.value)}>
-              <option value="Price">Cash Price</option>
-              <option value="Finance">Finance Price</option>
-            </select>
+            <SelectField
+              value={f.priceType}
+              onValueChange={(v) => set('priceType', v)}
+              options={[
+                { value: 'Price', label: 'Cash Price' },
+                { value: 'Finance', label: 'Finance Price' },
+              ]}
+            />
           </FieldWrap>
           <FieldWrap label="Monthly is approx.">
             <Toggle checked={f.monthlyApprox} onChange={(v) => set('monthlyApprox', v)} label="Show ≈ on EMI" />
