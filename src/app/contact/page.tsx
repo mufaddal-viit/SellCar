@@ -83,7 +83,7 @@ export default function ContactPage() {
                 </span>
               </div>
               <h2 className="display-heading text-3xl md:text-4xl text-white">
-                Our flagship branch
+                Our Flagship Branch
               </h2>
               <div className="mt-6 space-y-4">
                 <Detail

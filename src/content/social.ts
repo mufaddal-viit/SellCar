@@ -26,9 +26,8 @@ export const socialLinks: SocialLink[] = [
     href: 'https://www.facebook.com/share/18dCeUbmJp/?mibextid=wwXIfr',
   },
   {
-    // TODO: confirm the exact TikTok handle/URL with the client.
     platform: 'tiktok',
     label: 'TikTok',
-    href: 'https://www.tiktok.com/@buyndriveusedcars',
+    href: 'https://www.tiktok.com/@buyndrive7',
   },
 ];

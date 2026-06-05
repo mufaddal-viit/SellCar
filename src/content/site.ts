@@ -5,7 +5,7 @@ export const siteConfig: SiteConfig = {
   name: 'Buy&Drive Cars',
   tagline: 'Drive Your Dream. Pay With Ease.',
   description:
-    "A fresh way to drive home your next car in the UAE. Hand-picked vehicles with flexible monthly installments, zero down payment, and free insurance & registration. Fast approvals, honest profit rates, zero hassle.",
+    'Drive home your next car in the UAE with flexible monthly installments. Options like zero down payment and free insurance & registration on selected cars, with fast, hassle-free approvals.',
   url:
     process.env.NEXT_PUBLIC_SITE_URL ||
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://buyanddrivecars.ae'),
@@ -27,8 +27,8 @@ export const siteConfig: SiteConfig = {
   contact: {
     phone: contactNumbers.phone,
     whatsapp: contactNumbers.whatsapp,
-    email: 'hello@buyanddrivecars.ae',
-    address: 'Office 1204, Burj Al Salam, Sheikh Zayed Road, Dubai, UAE',
+    email: 'info@buyanddrive.ae',
+    address: 'Sheikh Zayed Road, Dubai, UAE',
     mapUrl: 'https://maps.google.com/?q=Sheikh+Zayed+Road+Dubai',
   },
   social: {
@@ -41,9 +41,9 @@ export const siteConfig: SiteConfig = {
   },
   business: {
     name: 'Buy&Drive Cars Auto Finance LLC',
-    foundedYear: 2024,
-    customers: '15,00+',
-    carsSold: '15,00+',
+    foundedYear: 2022,
+    customers: '1500+',
+    carsSold: '1100+',
   },
 };
 
@@ -51,7 +51,7 @@ export const mainNav: NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'Browse Cars', href: '/cars' },
   { label: 'Services', href: '/services' },
-  { label: 'About', href: '/about' },
+  { label: 'About Us', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
 

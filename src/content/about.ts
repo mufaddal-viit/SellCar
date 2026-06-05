@@ -15,16 +15,15 @@ export interface AboutStat {
 
 export const aboutMeta = {
   description:
-    "Buy&Drive Cars is one of the UAE's most trusted car finance platforms, serving customers across all 7 emirates with flexible, transparent car finance.",
+    'Buy&Drive Cars is a UAE car finance partner serving customers across all 7 emirates with flexible, transparent car finance.',
 };
 
 export const aboutHero = {
   title: 'We help the UAE',
   highlight: 'drive home.',
   intro:
-    "We were founded on a simple belief: owning a car shouldn't require a fortune up front. Today, we're one of the fastest-growing auto-finance companies in the Emirates.",
-  image:
-    'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1920&q=80',
+    "We were founded on a simple belief: owning a car shouldn't require a fortune up front. We help UAE residents drive home the car they want with finance that's simple and transparent.",
+  image: '/about/hero.jpg',
 };
 
 export const aboutStats: AboutStat[] = [
@@ -40,14 +39,13 @@ export const aboutStats: AboutStat[] = [
 
 export const aboutStory = {
   eyebrow: 'Our Story',
-  title: 'From one showroom to',
-  highlight: 'all 7 emirates.',
+  title: 'Car finance,',
+  highlight: 'made simple.',
   description:
-    "What started as a single showroom has grown into one of the UAE's most trusted car finance platforms. We've reimagined automotive finance from the ground up — replacing paperwork with fast approvals, hidden fees with up-front quotes, and queue-based service with dedicated relationship managers.",
+    "We've made car finance simpler in the UAE — fast approvals, up-front quotes with no hidden fees, and a dedicated team that guides you from your first enquiry through to delivery.",
   paragraph:
-    'Today, we serve customers across all 7 emirates, partner with every major auto brand, and have helped thousands of families bring home their dream car.',
-  image:
-    'https://images.unsplash.com/photo-1485291571150-772bcfc10da5?auto=format&fit=crop&w=1600&q=80',
+    'We serve customers across all 7 emirates and work with a wide range of brands to help you drive home the car you want.',
+  image: '/about/story.jpg',
 };
 
 export const aboutValuesHeading = {

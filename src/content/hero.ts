@@ -6,7 +6,7 @@ export const heroSlides: HeroSlide[] = [
     title: 'Own the road.',
     highlight: 'Pay Monthly.',
     subtitle:
-      'Drive home your dream car today with installments starting as low as AED 899/month. Zero down payment options available across the UAE.',
+      'Drive home your dream car today with low, flexible monthly installments. Zero down payment options available on selected cars across the UAE.',
     image: '/hero/slide1.avif',
     cta: { label: 'Browse Cars', href: '/cars' },
     // secondaryCta: { label: 'Calculate EMI', href: '/emi-calculator' },

@@ -34,8 +34,8 @@ export const whyChooseUs: Feature[] = [
   },
   {
     icon: 'TrendingDown',
-    title: 'Lowest Rates',
-    desc: 'Profit rates starting at 2.99% — significantly below market average across UAE banks.',
+    title: 'Competitive Rates',
+    desc: 'Transparent profit rates with everything quoted up front — no hidden margins.',
   },
   {
     icon: 'Wallet',
@@ -55,7 +55,7 @@ export const whyChooseUs: Feature[] = [
   {
     icon: 'Clock',
     title: 'Flexible Tenures',
-    desc: 'Choose anything from 12 to 60 months. Step-up installment plans available for first-time UAE buyers.',
+    desc: 'Choose a repayment period from 12 to 60 months to suit your budget.',
   },
 ];
 
@@ -93,7 +93,7 @@ export const assuranceCover: Feature[] = [
   },
   {
     icon: 'BadgeCheck',
-    title: 'Exceeds RTA Standards',
-    desc: 'Guaranteed to pass RTA testing.',
+    title: 'Meets RTA Standards',
+    desc: 'Inspected to meet RTA testing requirements.',
   },
 ];

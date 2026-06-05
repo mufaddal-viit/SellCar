@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const mediaSchema = z.object({
   url: z.string().url(),
-  // May be empty for seed/external images (Unsplash) that aren't Cloudinary uploads.
+  // May be empty for seed/external images that aren't Cloudinary uploads.
   publicId: z.string().default(''),
   width: z.number().optional(),
   height: z.number().optional(),

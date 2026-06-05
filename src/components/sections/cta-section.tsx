@@ -47,7 +47,7 @@ export function CTASection() {
             <div className="lg:justify-self-end space-y-4 w-full lg:max-w-sm">
               <Button asChild size="lg" variant="secondary" className="w-full">
                 <Link href="/cars">
-                  Browse 20+ Cars
+                  Browse Our Cars
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </Button>
