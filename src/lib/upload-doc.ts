@@ -1,4 +1,4 @@
-import type { DocKind } from '@/lib/validation';
+import { MAX_DOC_BYTES, type DocKind } from '@/lib/validation';
 
 export interface UploadedDoc {
   kind: DocKind;
@@ -18,6 +18,10 @@ export async function uploadDocument(
   name: string,
   token: string,
 ): Promise<UploadedDoc> {
+  if (file.size > MAX_DOC_BYTES) {
+    throw new Error(`File is too large (max ${Math.round(MAX_DOC_BYTES / 1024 / 1024)} MB).`);
+  }
+
   const signRes = await fetch('/api/applications/sign-upload', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

@@ -41,22 +41,35 @@ export function applicationFolder(name: string, appId: string): string {
   return `${APPLICATIONS_FOLDER}/${slugifyName(name)}_${appId}`;
 }
 
-/**
- * Signed, time-limited delivery URL for a private (authenticated) KYC document.
- * Used only server-side in the admin — these assets are not publicly accessible.
- */
+/** Signed delivery URL for a private (authenticated) KYC document — expires in 15 min. */
 export function signedDocUrl(
   publicId: string,
   resourceType = 'image',
-  format?: string,
+  format = '',
 ): string {
-  return cloudinary.url(publicId, {
+  const expiresAt = Math.floor(Date.now() / 1000) + 15 * 60; // 15 minutes
+  return cloudinary.utils.private_download_url(publicId, format || 'jpg', {
     resource_type: resourceType || 'image',
     type: 'authenticated',
-    sign_url: true,
-    secure: true,
-    ...(format ? { format } : {}),
+    expires_at: expiresAt,
   });
+}
+
+/** Fetch the byte size of a private asset (server-side document-size enforcement). */
+export async function getAssetBytes(
+  publicId: string,
+  resourceType = 'image',
+): Promise<number | null> {
+  if (!hasCloudinary || !publicId) return null;
+  try {
+    const r = await cloudinary.api.resource(publicId, {
+      resource_type: resourceType || 'image',
+      type: 'authenticated',
+    });
+    return typeof r.bytes === 'number' ? r.bytes : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Remove an asset from Cloudinary (best-effort). */

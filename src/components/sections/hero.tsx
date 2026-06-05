@@ -23,7 +23,7 @@ export function Hero() {
   const slide = heroSlides[active];
 
   return (
-    <section className="relative min-h-[100svh] w-full overflow-hidden bg-brand-black">
+    <section className="relative min-h-screen min-h-[100svh] w-full overflow-hidden bg-brand-black">
       {/* Full-bleed background slideshow — crossfades between hero slides every 6s */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -52,7 +52,7 @@ export function Hero() {
       <div className="absolute inset-0 bg-grid-pattern bg-[size:64px_64px] opacity-30 mask-fade-bottom" />
 
       {/* Foreground content column (label, title, subtitle, CTA) */}
-      <div className="container-wide relative z-10 flex min-h-[100svh] flex-col justify-center pt-24 pb-32">
+      <div className="container-wide relative z-10 flex min-h-screen min-h-[100svh] flex-col justify-center pt-24 pb-32">
         <div className="max-w-3xl">
           {/* Eyebrow: pulsing dot + slide counter (e.g. "01 / 03 — Drive Today") */}
           <AnimatePresence mode="wait">

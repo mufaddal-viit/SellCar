@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma, hasDb } from '@/lib/db/prisma';
 import { hasEmail, sendOtpEmail } from '@/lib/email';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 import {
   generateOtp,
   hashOtp,
@@ -11,7 +12,8 @@ import {
   OTP_SEND_WINDOW_MS,
 } from '@/lib/otp';
 
-const schema = z.object({ email: z.string().trim().email() });
+// `hp` is a honeypot — real users never fill it; bots usually do.
+const schema = z.object({ email: z.string().trim().email(), hp: z.string().optional() });
 
 export async function POST(req: Request) {
   if (!hasDb || !hasEmail) {
@@ -25,6 +27,21 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: 'Enter a valid email address.' }, { status: 400 });
   }
+
+  // Honeypot tripped → pretend success, send nothing.
+  if (parsed.data.hp && parsed.data.hp.trim() !== '') {
+    return NextResponse.json({ ok: true });
+  }
+
+  // Per-IP throttle (in addition to the per-email limit below).
+  const ip = clientIp(req);
+  if (!rateLimit(`otp:${ip}`, 10, 60 * 60 * 1000) || !rateLimit(`otp-burst:${ip}`, 3, 60 * 1000)) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429 },
+    );
+  }
+
   const email = parsed.data.email.toLowerCase();
   const now = new Date();
 

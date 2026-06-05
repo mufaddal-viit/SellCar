@@ -74,6 +74,7 @@ export function ApplicationForm({ cars }: { cars: CarOption[] }) {
   // Email verification
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
+  const [hp, setHp] = useState(''); // honeypot
   const [verified, setVerified] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
@@ -107,7 +108,7 @@ export function ApplicationForm({ cars }: { cars: CarOption[] }) {
       const res = await fetch('/api/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: f.email }),
+        body: JSON.stringify({ email: f.email, hp }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -206,6 +207,18 @@ export function ApplicationForm({ cars }: { cars: CarOption[] }) {
 
   return (
     <div className="space-y-6">
+      {/* Honeypot — hidden from real users, catches bots */}
+      <input
+        type="text"
+        name="company"
+        value={hp}
+        onChange={(e) => setHp(e.target.value)}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute left-[-9999px] h-0 w-0 opacity-0"
+      />
+
       <div className="flex items-start gap-3 rounded-xl border border-brand-red/20 bg-brand-red/[0.06] p-4 text-sm text-white/75">
         <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-brand-red" />
         <p>

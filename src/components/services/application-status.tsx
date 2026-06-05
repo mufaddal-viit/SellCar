@@ -68,6 +68,7 @@ export function ApplicationStatus() {
   const [email, setEmail] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
+  const [hp, setHp] = useState(''); // honeypot
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -91,7 +92,7 @@ export function ApplicationStatus() {
       const res = await fetch('/api/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, hp }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) setMsg(data.error || 'Could not send the code.');
@@ -219,6 +220,16 @@ export function ApplicationStatus() {
   // ── Email + OTP gate ─────────────────────────────────────────────────────────
   return (
     <div className="mx-auto max-w-md rounded-2xl border border-white/[0.07] bg-brand-black-soft p-6 md:p-8">
+      <input
+        type="text"
+        name="company"
+        value={hp}
+        onChange={(e) => setHp(e.target.value)}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute left-[-9999px] h-0 w-0 opacity-0"
+      />
       <div className="mb-5 flex items-start gap-3 text-sm text-white/65">
         <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-brand-red" />
         <p>Verify the email you applied with to view your application status securely.</p>

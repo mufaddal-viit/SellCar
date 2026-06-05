@@ -55,6 +55,9 @@ export type LeadInput = z.infer<typeof leadInputSchema>;
 
 // ── Applications (car finance) ───────────────────────────────────────────────
 
+/** Max size per uploaded document (enforced client-side + server-side). */
+export const MAX_DOC_BYTES = 10 * 1024 * 1024; // 10 MB
+
 export const DOC_KINDS = [
   'emirates_id',
   'visa',

@@ -2,11 +2,15 @@
 
 import { revalidatePath } from 'next/cache';
 import { prisma, hasDb } from '@/lib/db/prisma';
-import { destroyDoc } from '@/lib/cloudinary';
+import { destroyDoc, getAssetBytes } from '@/lib/cloudinary';
 import { verifyEmailToken } from '@/lib/otp';
 import { hasEmail, sendApprovedEmail, sendRejectedEmail } from '@/lib/email';
 import { assertAdmin } from '@/lib/auth-guard';
-import { applicationSubmitSchema, REQUIRED_DOC_KINDS } from '@/lib/validation';
+import {
+  applicationSubmitSchema,
+  REQUIRED_DOC_KINDS,
+  MAX_DOC_BYTES,
+} from '@/lib/validation';
 
 export interface SubmitState {
   ok?: boolean;
@@ -36,6 +40,17 @@ export async function submitApplication(
   const have = new Set(d.documents.map((x) => x.kind));
   if (REQUIRED_DOC_KINDS.some((k) => !have.has(k))) {
     return { error: 'Please upload all required documents.' };
+  }
+
+  // Server-side document size enforcement (the client check is bypassable).
+  for (const doc of d.documents) {
+    const bytes = await getAssetBytes(doc.publicId, doc.resourceType);
+    if (bytes !== null && bytes > MAX_DOC_BYTES) {
+      await destroyDoc(doc.publicId, doc.resourceType);
+      return {
+        error: `Each document must be under ${Math.round(MAX_DOC_BYTES / 1024 / 1024)} MB.`,
+      };
+    }
   }
 
   // Link the selected car (snapshot its name).
