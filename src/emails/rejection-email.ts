@@ -26,7 +26,7 @@ export function rejectionEmail({
 
   return {
     subject: `Update on your ${siteConfig.name} application`,
-    text: `Hi ${name}, thank you for applying. Unfortunately your application${carText} was not approved at this time.${reason ? ` Reason: ${reason}.` : ''} You're welcome to reapply or contact us. Check your status at ${siteConfig.url}/application-status`,
+    text: `Hi ${name}, thank you for applying. Unfortunately your application${carText} was not approved at this time.${reason ? ` Reason: ${reason}.` : ''} You're welcome to reapply or contact us. Check your status at ${siteConfig.url}/services/application-status`,
     html: emailShell(`
       <tr><td style="padding:36px 32px 8px;">
         <div style="display:inline-block;background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:999px;padding:4px 12px;font-size:11px;font-weight:800;letter-spacing:1px;">UPDATE</div>

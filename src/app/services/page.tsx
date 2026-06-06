@@ -28,10 +28,10 @@ export default async function ServicesPage() {
           highlight="car finance."
           description="Pick your car, fill in your details, verify your email and upload your documents. Our team will review your application and call you with a personalised offer — usually within 5-7 days."
         />
-        <div className="mt-6">
+        <div className="mt-6 ">
           <Link
-            href="/application-status"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-red hover:underline"
+            href="/services/application-status"
+            className="inline-flex items-center gap-1.5 text-xl font-medium text-brand-red hover:underline"
           >
             Already applied? Check your status
             <ArrowRight className="h-4 w-4" />

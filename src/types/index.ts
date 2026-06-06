@@ -72,6 +72,7 @@ export interface SiteConfig {
     email: string;
     address: string;
     mapUrl: string;
+    mapUrliframe: string;
   };
   social: {
     facebook: string;
@@ -126,6 +127,8 @@ export interface EMIPlan {
 
 export interface HeroSlide {
   id: string;
+  /** Small eyebrow text shown above the headline (varies per slide) */
+  tag: string;
   title: string;
   highlight: string;
   subtitle: string;

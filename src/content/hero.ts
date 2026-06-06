@@ -3,6 +3,7 @@ import type { HeroSlide } from '@/types';
 export const heroSlides: HeroSlide[] = [
   {
     id: 'h1',
+    tag: 'Zero Down Payment Options',
     title: 'Own the road.',
     highlight: 'Pay Monthly.',
     subtitle:
@@ -13,6 +14,7 @@ export const heroSlides: HeroSlide[] = [
   },
   {
     id: 'h2',
+    tag: 'Fast, Hassle-Free Approvals',
     title: 'The keys are closer.',
     highlight: 'Than you think.',
     subtitle:
@@ -22,6 +24,7 @@ export const heroSlides: HeroSlide[] = [
   },
   {
     id: 'h3',
+    tag: 'Flexible Monthly Installments',
     title: 'Luxury, redefined.',
     highlight: 'Within your budget.',
     subtitle:

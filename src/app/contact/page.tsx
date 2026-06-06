@@ -124,7 +124,7 @@ export default function ContactPage() {
             <div className="relative aspect-[4/3] overflow-hidden bg-brand-black border border-white/[0.06]">
               <iframe
                 title="Branch location"
-                src="https://www.google.com/maps?q=Sheikh+Zayed+Road+Dubai&output=embed"
+                src={siteConfig.contact.mapUrliframe}
                 className="absolute inset-0 w-full h-full"
                 style={{ border: 0, filter: 'invert(0.92) hue-rotate(180deg) saturate(0.4)' }}
                 loading="lazy"

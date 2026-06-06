@@ -196,7 +196,7 @@ export function ApplicationForm({ cars }: { cars: CarOption[] }) {
           shortly. We&apos;ll email you when there&apos;s an update.
         </p>
         <a
-          href="/application-status"
+          href="/services/application-status"
           className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-brand-red hover:underline"
         >
           Check your application status →
@@ -219,10 +219,10 @@ export function ApplicationForm({ cars }: { cars: CarOption[] }) {
         className="absolute left-[-9999px] h-0 w-0 opacity-0"
       />
 
-      <div className="flex items-start gap-3 rounded-xl border border-brand-red/20 bg-brand-red/[0.06] p-4 text-sm text-white/75">
+      <div className="flex items-start gap-3 rounded-xl w-fit border bg-brand-red/[0.06] p-4 text-sm text-white/75">
         <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-brand-red" />
         <p>
-          A minimum salary of <strong className="text-white">AED 5,000</strong> is required. Your
+           Your
           information and documents are kept confidential and used only to process your application.
         </p>
       </div>

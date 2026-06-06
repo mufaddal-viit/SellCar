@@ -28,8 +28,9 @@ export const siteConfig: SiteConfig = {
     phone: contactNumbers.phone,
     whatsapp: contactNumbers.whatsapp,
     email: 'info@buyanddrive.ae',
-    address: 'Sheikh Zayed Road, Dubai, UAE',
-    mapUrl: 'https://maps.google.com/?q=Sheikh+Zayed+Road+Dubai',
+    address: 'Burjuman, Dubai, UAE',
+    mapUrl: 'https://maps.google.com/?q=burjuman+Dubai',
+    mapUrliframe:"https://www.google.com/maps?q=burjuman+Dubai&output=embed"
   },
   social: {
     facebook: 'https://www.facebook.com/share/18dCeUbmJp/?mibextid=wwXIfr',
@@ -51,6 +52,7 @@ export const mainNav: NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'Browse Cars', href: '/cars' },
   { label: 'Services', href: '/services' },
+  { label: 'Application Status', href: '/services/application-status' },
   { label: 'About Us', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
@@ -59,36 +61,36 @@ export const footerLinks = {
   company: [
     { label: 'Who We Are', href: '/about' },
     { label: 'News & Updates', href: '/news', soon: true },
-    { label: 'Careers', href: '/about#careers' },
+    // { label: 'Careers', href: '/about#careers' },
     { label: 'Press & Media', href: '/press', soon: true },
   ],
   services: [
     { label: 'Submit Documents', href: '/services' },
-    { label: 'Check Documents', href: '/services/check-status' },
-    { label: 'Insurance', href: '/services/insurance' },
+    { label: 'Application Status', href: '/services/application-status' },
+    // { label: 'Insurance', href: '/services/insurance' },
   ],
   financing: [
-  { label: 'How EMI Works', href: '/financing' },
-  { label: 'Check Eligibility', href: '/financing#eligibility' },
-  { label: 'Required Documents', href: '/financing#documents' },
-  { label: 'Profit Rates', href: '/financing#rates' },
+  { label: 'Check Eligibility', href: '/#eligibility' },
+  { label: 'How EMI Works', href: '/financing', soon: true },
+  // { label: 'Required Documents', href: '/financing#documents' },
+  // { label: 'Profit Rates', href: '/financing#rates' },
 ],
   support: [
     { label: 'Contact Us', href: '/contact' },
     { label: 'FAQs', href: '/#faq' },
-    { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Service', href: '/terms' },
+    // { label: 'Privacy Policy', href: '/privacy' },
+    // { label: 'Terms of Service', href: '/terms' },
   ],
   legal: [
-  { label: 'Terms & Conditions', href: '/terms' },
-  { label: 'Privacy Policy', href: '/privacy' },
-  { label: 'Cookie Policy', href: '/cookies' },
-  { label: 'Sharia Compliance', href: '/sharia' },
+  { label: 'Terms & Conditions', href: '/terms', soon: true },
+  { label: 'Privacy Policy', href: '/privacy', soon: true },
+  // { label: 'Cookie Policy', href: '/cookies' },
+  // { label: 'Sharia Compliance', href: '/sharia' },
 ],
 };
 
 export const heroStats = [
-  { label: 'Cars Financed', value: '1,200+' },
+  { label: 'Cars Financed', value: '1,100+' },
   { label: 'Approval Rate', value: '94%' },
   { label: 'Down Payment From', value: '0%' },
   { label: 'Avg. Approval', value: '5-7 days' },

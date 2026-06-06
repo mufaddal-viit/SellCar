@@ -15,7 +15,7 @@ export function approvedEmail({
 
   return {
     subject: `Good news — your ${siteConfig.name} application is approved`,
-    text: `Hi ${name}, great news! Your car finance application${carText} has been approved. Our team will contact you shortly with the next steps. Check your status at ${siteConfig.url}/application-status`,
+    text: `Hi ${name}, great news! Your car finance application${carText} has been approved. Our team will contact you shortly with the next steps. Check your status at ${siteConfig.url}/services/application-status`,
     html: emailShell(`
       <tr><td style="padding:36px 32px 8px;">
         <div style="display:inline-block;background:#ecfdf5;border:1px solid #a7f3d0;color:#047857;border-radius:999px;padding:4px 12px;font-size:11px;font-weight:800;letter-spacing:1px;">APPROVED</div>
@@ -26,7 +26,7 @@ export function approvedEmail({
         </p>
       </td></tr>
       <tr><td style="padding:22px 32px 32px;">
-        ${button(`${siteConfig.url}/application-status`, 'Check your status')}
+        ${button(`${siteConfig.url}/services/application-status`, 'Check your status')}
       </td></tr>
     `),
   };

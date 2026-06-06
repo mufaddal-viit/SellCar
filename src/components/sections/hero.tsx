@@ -54,7 +54,7 @@ export function Hero() {
       {/* Foreground content column (label, title, subtitle, CTA) */}
       <div className="container-wide relative z-10 flex min-h-screen min-h-[100svh] flex-col justify-center pt-24 pb-32">
         <div className="max-w-3xl">
-          {/* Eyebrow: pulsing dot + slide counter (e.g. "01 / 03 — Drive Today") */}
+          {/* Eyebrow: pulsing dot + per-slide tag text */}
           <AnimatePresence mode="wait">
             <motion.div
               key={`label-${slide.id}`}
@@ -68,7 +68,7 @@ export function Hero() {
                 <span className="absolute w-3 h-3 rounded-full bg-brand-red animate-ping" />
               </span>
               <span className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
-                {String(active + 1).padStart(2, '0')} / {String(heroSlides.length).padStart(2, '0')} — Drive Today
+                {slide.tag}
               </span>
             </motion.div>
           </AnimatePresence>

@@ -12,7 +12,7 @@ export function ComingSoon({
   description: string;
 }) {
   return (
-    <div className="grid min-h-[70vh] place-items-center bg-brand-black px-4">
+    <div className="grid min-h-[60vh] place-items-center bg-brand-black px-4 py-20 md:py-28">
       <div className="max-w-lg text-center">
         <div className="mx-auto mb-6 grid h-14 w-14 place-items-center rounded-full bg-brand-red/10 text-brand-red">
           <Clock className="h-6 w-6" />
