@@ -33,8 +33,8 @@ const DOC_FIELDS: { kind: DocKind; label: string; required: boolean }[] = [
   { kind: 'emirates_id', label: 'Emirates ID', required: true },
   { kind: 'visa', label: 'Visa', required: true },
   { kind: 'passport', label: 'Passport Copy', required: true },
-  { kind: 'salary_certificate', label: 'Salary Certificate', required: true },
-  { kind: 'bank_statement', label: 'Last 3 Months Bank Statement', required: false },
+  { kind: 'salary_certificate', label: 'Salary Certificate', required: false },
+  { kind: 'bank_statement', label: 'Last 3 Months Salary / Bank Statement', required: false },
 ];
 
 type DocState = Record<string, { status: 'idle' | 'uploading' | 'done' | 'error'; error?: string }>;
@@ -162,7 +162,12 @@ export function ApplicationForm({ cars }: { cars: CarOption[] }) {
 
   const requiredDocsDone = DOC_FIELDS.filter((d) => d.required).every((d) => uploaded[d.kind]);
   const canSubmit =
-    verified && !!carId && f.name.trim().length > 1 && f.mobile.trim().length > 5 && requiredDocsDone;
+    verified &&
+    !!carId &&
+    f.name.trim().length > 1 &&
+    f.mobile.trim().length > 5 &&
+    f.iban.trim().length > 0 &&
+    requiredDocsDone;
 
   const submit = async () => {
     if (!token) return;
@@ -241,7 +246,7 @@ export function ApplicationForm({ cars }: { cars: CarOption[] }) {
           />
         </Field>
 
-        <Field label="Full Name" htmlFor="name" required>
+        <Field label="Full Name" htmlFor="name" required className="sm:col-span-2">
           <Input id="name" value={f.name} onChange={(e) => set('name', e.target.value)} />
         </Field>
         <Field label="Mobile Number" htmlFor="mobile" required>
@@ -249,11 +254,11 @@ export function ApplicationForm({ cars }: { cars: CarOption[] }) {
         </Field>
 
         {/* Email + OTP */}
-        <div className="sm:col-span-2">
+        <div>
           <Label className="mb-2 block">
             Email <span className="text-brand-red">*</span>
           </Label>
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex flex-col gap-2">
             <div className="relative flex-1">
               <Input
                 type="email"
@@ -338,7 +343,7 @@ export function ApplicationForm({ cars }: { cars: CarOption[] }) {
           <Section legend="Salary & Banking">
             <Field label="Salary Credit Date" htmlFor="salaryDate" hint="e.g. 25th of each month"><Input id="salaryDate" value={f.salaryDate} onChange={(e) => set('salaryDate', e.target.value)} /></Field>
             <Field label="Salary Bank Name" htmlFor="bankName"><Input id="bankName" value={f.bankName} onChange={(e) => set('bankName', e.target.value)} /></Field>
-            <Field label="IBAN Number" htmlFor="iban" className="sm:col-span-2"><Input id="iban" value={f.iban} onChange={(e) => set('iban', e.target.value)} placeholder="AE__ ____ ____ ____ ____ ___" /></Field>
+            <Field label="IBAN Number" htmlFor="iban" required className="sm:col-span-2"><Input id="iban" value={f.iban} onChange={(e) => set('iban', e.target.value)} placeholder="AE__ ____ ____ ____ ____ ___" /></Field>
           </Section>
 
           <Section legend="Existing Obligations" description="Leave blank or select “No” if not applicable.">
@@ -366,7 +371,7 @@ export function ApplicationForm({ cars }: { cars: CarOption[] }) {
         legend="Documents"
         description={
           verified
-            ? "Upload clear photos or PDFs. Bank statement is optional if you've provided your IBAN."
+            ? 'Upload clear photos or PDFs. Emirates ID, Visa and Passport are required. Salary certificate and bank statement are optional — but adding them speeds up approval.'
             : 'Verify your email above to enable document uploads.'
         }
       >

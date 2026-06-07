@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Car, FileText, ExternalLink } from 'lucide-react';
 import { getApplicationBySlug } from '@/server/applications';
-import { ApplicationReview } from '@/components/admin/application-review';
+import { ReviewDecision } from '@/components/admin/review-decision';
 import { CopyPhone } from '@/components/admin/copy-phone';
 
 export const dynamic = 'force-dynamic';
@@ -48,15 +48,14 @@ export default async function ApplicationDetailPage({ params }: PageProps) {
             Submitted {new Date(app.createdAt).toLocaleString()}
           </p>
         </div>
-        <span
-          className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider ${STATUS_STYLE[app.status] ?? 'border-white/15 text-white/60'}`}
-        >
-          {app.status.replace('_', ' ')}
-        </span>
-      </div>
-
-      <div className="mb-6">
-        <ApplicationReview id={app.id} status={app.status} reviewNote={app.reviewNote} />
+        <div className="flex flex-col items-end gap-3">
+          <span
+            className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider ${STATUS_STYLE[app.status] ?? 'border-white/15 text-white/60'}`}
+          >
+            {app.status.replace('_', ' ')}
+          </span>
+          <ReviewDecision id={app.id} status={app.status} reviewNote={app.reviewNote} />
+        </div>
       </div>
 
       {/* Linked car */}

@@ -27,7 +27,7 @@ git push origin master
 
 - [ ] All env vars from the table below are set in **Vercel → Settings → Environment Variables** (Production + Preview). `.env` is **not** committed.
 - [ ] `MONGODB_URI` points at your real Atlas cluster; Atlas network access allows Vercel (`0.0.0.0/0`).
-- [ ] `AUTH_SECRET` is a fresh 32-byte random hex, and `ADMIN_EMAIL` is set (admin login emails a one-time code there).
+- [ ] `AUTH_SECRET` is a fresh 32-byte random hex, and `ADMIN_PASSWORD` is strong.
 - [ ] Both `NEXT_PUBLIC_CLOUDINARY_*` vars are set (the upload widget needs them in the browser).
 - [ ] `NEXT_PUBLIC_SITE_URL` is your production domain (used for SEO, sitemap, OG tags).
 - [ ] `npm run build` passes locally.
@@ -64,7 +64,8 @@ Add these in **Project Settings → Environment Variables** (or during the impor
 | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | ✅ for media | `mycloud` | Same cloud name, exposed to the upload widget |
 | `NEXT_PUBLIC_CLOUDINARY_API_KEY` | ✅ for media | `1234…` | Same API key, exposed to the upload widget |
 | `CLOUDINARY_FOLDER_NAME` | optional | `carimages` | Cloudinary folder uploads are stored in (default `driveeasy/cars`) |
-| `ADMIN_EMAIL` | ✅ for admin | `you@buyanddrive.ae` | Admin login email — a one-time code is emailed here (no password). Only this address can sign in. Needs the `EMAIL_*` vars + `MONGODB_URI`. |
+| `ADMIN_USERNAME` | ✅ for admin | `admin` | Admin login username |
+| `ADMIN_PASSWORD` | ✅ for admin | strong password | Admin login password |
 | `AUTH_SECRET` | ✅ for admin | 32-byte hex | Signs the admin session cookie + OTP/email-verify tokens. Generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
 | `EMAIL_USER` | ✅ for /services | `you@gmail.com` | Gmail address that sends OTP codes |
 | `EMAIL_APP_PASSWORD` | ✅ for /services | app password | Google **App Password** (not your login password) — myaccount.google.com/apppasswords |
@@ -137,7 +138,7 @@ After the first deploy completes:
 4. Visit `/cars/bmw-3-series-2024` — detail page with EMI calculator.
 5. Visit `/sitemap.xml` — should list all car routes.
 6. Visit `/robots.txt` — should disallow `/admin` and `/api`.
-7. Visit `/admin` — should redirect to `/admin/login`; enter `ADMIN_EMAIL`, get the emailed code, and verify to sign in.
+7. Visit `/admin` — should redirect to `/admin/login`; sign in with `ADMIN_USERNAME` / `ADMIN_PASSWORD`.
 8. In the admin, add/edit a car and upload a photo — confirm it appears on the public `/cars` page within a few seconds (cache revalidates on save).
 
 If GA / GTM / Pixel are configured, verify in their respective real-time dashboards.
@@ -161,7 +162,7 @@ No manual steps. Every push triggers a build automatically.
 
 **OG tags show wrong URL** — set `NEXT_PUBLIC_SITE_URL` to your production domain in Vercel env vars, then redeploy.
 
-**Can't receive / use the admin login code** — ensure `ADMIN_EMAIL`, `AUTH_SECRET`, `MONGODB_URI`, and the `EMAIL_*` vars are all set (the code is emailed via Gmail). Only `ADMIN_EMAIL` can sign in. Changing `AUTH_SECRET` invalidates existing sessions.
+**`/admin` redirects to login even with correct credentials** — ensure `AUTH_SECRET`, `ADMIN_USERNAME`, and `ADMIN_PASSWORD` are all set in Vercel env vars and redeploy. The cookie is signed with `AUTH_SECRET`, so changing it invalidates existing sessions.
 
 **Cars don't appear after seeding** — confirm `MONGODB_URI` is set in the same environment (Production) the site runs in, and that you ran `npm run db:seed` against that database.
 

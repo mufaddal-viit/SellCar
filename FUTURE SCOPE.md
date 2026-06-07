@@ -2,6 +2,7 @@ FUTURE SCOPE
 create a new section "EMail Templates" in admin to display all email template, edit and create new template.
 
 
+what i was thinking is that, we can have a feature of car display on hover on /service page on choose your car dropdown.
 
 
 TESTING STEPS:

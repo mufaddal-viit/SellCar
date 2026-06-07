@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Send, Trash2, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Send, Trash2, Loader2, CheckCircle2, AlertCircle, X } from 'lucide-react';
 import { reviewApplication, deleteApplication, type AppStatus } from '@/actions/applications';
 import { SelectField } from '@/components/ui/select-field';
 import { Label } from '@/components/ui/label';
@@ -19,10 +19,12 @@ export function ApplicationReview({
   id,
   status: initStatus,
   reviewNote,
+  onClose,
 }: {
   id: string;
   status: string;
   reviewNote: string | null;
+  onClose?: () => void;
 }) {
   const router = useRouter();
   const [status, setStatus] = useState(initStatus);
@@ -54,15 +56,27 @@ export function ApplicationReview({
     <div className="rounded-2xl border border-white/[0.07] bg-brand-black-soft p-6">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="font-display text-lg font-bold text-white">Review decision</h2>
-        <button
-          type="button"
-          onClick={remove}
-          disabled={pending}
-          className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/60 hover:border-red-500/40 hover:text-red-400"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-          Delete
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={remove}
+            disabled={pending}
+            className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/60 hover:border-red-500/40 hover:text-red-400"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            Delete
+          </button>
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 text-white/60 hover:text-white"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid items-start gap-4 sm:grid-cols-[200px_1fr]">

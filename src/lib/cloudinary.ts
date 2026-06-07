@@ -99,6 +99,38 @@ export async function destroyDoc(publicId: string, resourceType = 'image') {
 }
 
 export const TESTIMONIALS_FOLDER = `${CLOUDINARY_FOLDER}/testimonials`;
+/** Feedback screenshots (mobile) shown in the carousel. */
+export const TESTIMONIAL_SCREENSHOTS_FOLDER = `${TESTIMONIALS_FOLDER}/screenshots`;
+/** Happy-customer photos shown as a gallery. */
+export const TESTIMONIAL_FACES_FOLDER = `${TESTIMONIALS_FOLDER}/faces`;
+
+export interface FolderImage {
+  publicId: string;
+  url: string;
+  width: number;
+  height: number;
+}
+
+/** List every image in a single Cloudinary folder (oldest first), via Search API. */
+export async function listFolderImages(folder: string): Promise<FolderImage[]> {
+  if (!hasCloudinary) return [];
+  try {
+    const res = await cloudinary.search
+      .expression(`folder:${folder}`)
+      .sort_by('created_at', 'asc')
+      .max_results(100)
+      .execute();
+    type R = { public_id: string; secure_url: string; width: number; height: number };
+    return (res.resources as R[]).map((r) => ({
+      publicId: r.public_id,
+      url: r.secure_url,
+      width: r.width,
+      height: r.height,
+    }));
+  } catch {
+    return [];
+  }
+}
 
 export interface ClientPhoto {
   id: string;

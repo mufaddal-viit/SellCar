@@ -67,13 +67,11 @@ export const DOC_KINDS = [
 ] as const;
 export type DocKind = (typeof DOC_KINDS)[number];
 
-/** Documents required to submit (bank statement is optional — IBAN can substitute). */
-export const REQUIRED_DOC_KINDS: DocKind[] = [
-  'emirates_id',
-  'visa',
-  'passport',
-  'salary_certificate',
-];
+/**
+ * Documents required to submit. Salary certificate and bank statement (last 3
+ * months salary) are optional — helpful but not blocking. IBAN is mandatory.
+ */
+export const REQUIRED_DOC_KINDS: DocKind[] = ['emirates_id', 'visa', 'passport'];
 
 const optStr = z.string().trim().optional().or(z.literal(''));
 
@@ -102,7 +100,7 @@ export const applicationSubmitSchema = z.object({
   officeLandline: optStr,
   salaryDate: optStr,
   bankName: optStr,
-  iban: optStr,
+  iban: z.string().trim().min(1, 'IBAN is required'),
   loanInstallment: optStr,
   hasCards: optStr,
   cardLimit: optStr,

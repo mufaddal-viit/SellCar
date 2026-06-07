@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Car, Inbox, FileText, Users, ExternalLink } from 'lucide-react';
+import { LayoutDashboard, Car, Inbox, FileText, Users, Images, ExternalLink } from 'lucide-react';
 import { Logo } from '@/components/shared/logo';
 import { LogoutButton } from './logout-button';
 import { cn } from '@/lib/utils';
@@ -12,6 +12,7 @@ const nav = [
   { href: '/admin/cars', label: 'Cars', icon: Car },
   { href: '/admin/applications', label: 'Applications', icon: FileText },
   { href: '/admin/customers', label: 'Customers', icon: Users },
+  { href: '/admin/testimonials', label: 'Testimonials', icon: Images },
   { href: '/admin/leads', label: 'Leads', icon: Inbox },
 ];
 
