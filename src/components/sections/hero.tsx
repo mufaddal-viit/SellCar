@@ -147,15 +147,20 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Sticky stats strip pinned to the bottom of the hero (cars financed, approval rate, …) */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-white/[0.06] bg-brand-black/60 backdrop-blur-xl">
-        <div className="container-wide grid grid-cols-2 md:grid-cols-4 divide-x divide-white/[0.06]">
+      {/* Stats strip pinned to the bottom of the hero (cars financed, approval rate, …).
+          Uses gap-px over a hairline background so dividers are perfect on every
+          side in both the 2-col (mobile) and 4-col (desktop) grids. */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-white/[0.08] bg-white/[0.08]">
+        <div className="grid grid-cols-2 gap-px md:grid-cols-4">
           {heroStats.map((s) => (
-            <div key={s.label} className="px-3 py-3 sm:px-6 sm:py-5 md:py-7">
-              <div className="display-heading text-lg sm:text-2xl md:text-4xl text-white">
+            <div
+              key={s.label}
+              className="bg-brand-black/70 px-4 py-3.5 backdrop-blur-xl sm:px-6 sm:py-5 md:py-7"
+            >
+              <div className="display-heading text-lg leading-none text-white sm:text-2xl md:text-4xl">
                 {s.value}
               </div>
-              <div className="mt-0.5 sm:mt-1 text-[9px] sm:text-xs font-medium uppercase tracking-widest text-white/50">
+              <div className="mt-1.5 text-[10px] font-medium uppercase tracking-widest text-white/50 sm:text-xs">
                 {s.label}
               </div>
             </div>

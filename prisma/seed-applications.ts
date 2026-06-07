@@ -35,6 +35,7 @@ async function main() {
   const samples = [
     {
       id: 'aaaaaaaaaaaaaaaaaaaaaaa1',
+      slug: 'ahmed-hassan-0001',
       name: 'Ahmed Hassan',
       mobile: '+971501112233',
       email: 'ahmed.test@example.com',
@@ -64,6 +65,7 @@ async function main() {
     },
     {
       id: 'aaaaaaaaaaaaaaaaaaaaaaa2',
+      slug: 'sara-khan-0002',
       name: 'Sara Khan',
       mobile: '+971554445566',
       email: 'sara.test@example.com',

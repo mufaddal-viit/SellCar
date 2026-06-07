@@ -15,6 +15,9 @@ import {
   Gauge,
   Layers,
   Building2,
+  FileText,
+  XCircle,
+  Users,
 } from 'lucide-react';
 import { getDashboardMetrics } from '@/server/metrics';
 import { hasDb } from '@/lib/db/prisma';
@@ -41,20 +44,52 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Inventory */}
-      <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      {/* Sales */}
+      <Group title="Sales">
+        <StatCard label="Sold This Month" value={m.soldThisMonth} icon={TrendingUp} />
+        <StatCard label="Total Sold Value" value={formatPrice(m.soldValueTotal)} icon={Wallet} />
+        <StatCard label="Avg. Days to Sell" value={m.avgDaysToSell ?? '—'} icon={Clock} />
+        <StatCard
+          label="CTA Clicks"
+          value={m.whatsappClicks + m.callClicks}
+          hint={`${m.whatsappClicks} WhatsApp · ${m.callClicks} call`}
+          icon={MessageCircle}
+        />
+      </Group>
+
+      {/* Applications */}
+      <Group title="Applications">
+        <StatCard label="Total Applications" value={m.applicationsTotal} icon={FileText} />
+        <StatCard
+          label="New"
+          value={m.applicationsNew}
+          hint="Awaiting review"
+          icon={Inbox}
+          accent={m.applicationsNew > 0}
+        />
+        <StatCard label="In Review" value={m.applicationsInReview} icon={Clock} />
+        <StatCard label="Approved" value={m.applicationsApproved} icon={BadgeCheck} />
+        <StatCard label="Rejected" value={m.applicationsRejected} icon={XCircle} />
+      </Group>
+
+      {/* Cars */}
+      <Group title="Cars">
         <StatCard label="Total Cars" value={m.totalCars} icon={Car} />
         <StatCard label="Available" value={m.available} icon={CheckCircle2} />
         <StatCard label="Reserved" value={m.reserved} icon={Clock} />
         <StatCard label="Sold" value={m.sold} icon={BadgeCheck} />
-        <StatCard
-          label="Inventory Value"
-          value={formatPrice(m.inventoryValue)}
-          hint="Unsold stock"
-          icon={Wallet}
-        />
+        <StatCard label="Inventory Value" value={formatPrice(m.inventoryValue)} hint="Unsold stock" icon={Wallet} />
+        <StatCard label="Avg. Price" value={formatPrice(m.avgPrice)} hint="Unsold stock" icon={Tag} />
+        <StatCard label="Lowest EMI" value={m.lowestEmi ? `${formatEMI(m.lowestEmi)}/mo` : '—'} icon={Gauge} />
         <StatCard label="Featured" value={m.featured} icon={Star} />
         <StatCard label="Drafts" value={m.drafts} hint="Unpublished" icon={EyeOff} />
+        <StatCard label="Brands" value={m.byBrand.length} icon={Building2} />
+        <StatCard label="Categories" value={m.byCategory.length} icon={Layers} />
+      </Group>
+
+      {/* Other */}
+      <Group title="Other">
+        <StatCard label="Customers" value={m.customersTotal} icon={Users} />
         <StatCard
           label="New Enquiries"
           value={m.enquiriesNew}
@@ -62,40 +97,9 @@ export default async function DashboardPage() {
           icon={Inbox}
           accent={m.enquiriesNew > 0}
         />
-      </section>
-
-      {/* Sales + interactions */}
-      <section className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Sold This Month" value={m.soldThisMonth} icon={TrendingUp} />
-        <StatCard label="Total Sold Value" value={formatPrice(m.soldValueTotal)} />
-        <StatCard
-          label="Avg. Days to Sell"
-          value={m.avgDaysToSell ?? '—'}
-          icon={Clock}
-        />
-        <StatCard
-          label="CTA Clicks"
-          value={m.whatsappClicks + m.callClicks}
-          hint={`${m.whatsappClicks} WhatsApp · ${m.callClicks} call`}
-        />
-      </section>
-
-      {/* Pricing + catalog */}
-      <section className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard
-          label="Avg. Price"
-          value={formatPrice(m.avgPrice)}
-          hint="Unsold stock"
-          icon={Tag}
-        />
-        <StatCard
-          label="Lowest EMI"
-          value={m.lowestEmi ? `${formatEMI(m.lowestEmi)}/mo` : '—'}
-          icon={Gauge}
-        />
-        <StatCard label="Brands" value={m.byBrand.length} icon={Building2} />
-        <StatCard label="Categories" value={m.byCategory.length} icon={Layers} />
-      </section>
+        <StatCard label="WhatsApp Clicks" value={m.whatsappClicks} icon={MessageCircle} />
+        <StatCard label="Call Clicks" value={m.callClicks} icon={Phone} />
+      </Group>
 
       <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
         <CollapsiblePanel title="By Category" subtitle={`${m.byCategory.length} types`}>
@@ -154,6 +158,17 @@ export default async function DashboardPage() {
         </CollapsiblePanel>
       </div>
     </div>
+  );
+}
+
+function Group({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="mb-8">
+      <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
+        {title}
+      </h2>
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">{children}</div>
+    </section>
   );
 }
 

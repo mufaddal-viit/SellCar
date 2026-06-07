@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Car, FileText, ExternalLink } from 'lucide-react';
-import { getApplicationById } from '@/server/applications';
+import { getApplicationBySlug } from '@/server/applications';
 import { ApplicationReview } from '@/components/admin/application-review';
+import { CopyPhone } from '@/components/admin/copy-phone';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,12 +23,12 @@ const STATUS_STYLE: Record<string, string> = {
 };
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 export default async function ApplicationDetailPage({ params }: PageProps) {
-  const { id } = await params;
-  const app = await getApplicationById(id);
+  const { slug } = await params;
+  const app = await getApplicationBySlug(slug);
   if (!app) notFound();
 
   return (
@@ -111,9 +112,12 @@ export default async function ApplicationDetailPage({ params }: PageProps) {
         <Panel title="Contact">
           <Rows
             rows={[
-              ['Mobile', app.mobile],
+              ['Mobile', <CopyPhone key="m" phone={app.mobile} />],
               ['Email', app.email],
-              ['Home-country mobile', app.homeMobile],
+              [
+                'Home-country mobile',
+                app.homeMobile ? <CopyPhone key="hm" phone={app.homeMobile} /> : null,
+              ],
               ["Mother's name", app.mother],
             ]}
           />
@@ -171,7 +175,7 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
   );
 }
 
-function Rows({ rows }: { rows: [string, string | null][] }) {
+function Rows({ rows }: { rows: [string, React.ReactNode][] }) {
   return (
     <dl className="divide-y divide-white/[0.06]">
       {rows.map(([label, value]) => (

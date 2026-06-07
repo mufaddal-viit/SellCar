@@ -4,6 +4,7 @@ import { siteConfig } from '@/content/site';
 import { otpEmail, type EmailContent } from '@/emails/otp-email';
 import { approvedEmail } from '@/emails/approved-email';
 import { rejectionEmail } from '@/emails/rejection-email';
+import { promoEmail } from '@/emails/promo-email';
 
 export const hasEmail = Boolean(
   process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD,
@@ -45,4 +46,12 @@ export async function sendRejectedEmail(
   data: { name: string; carName?: string | null; reason?: string | null },
 ): Promise<void> {
   await send(to, rejectionEmail(data));
+}
+
+export async function sendPromoEmail(
+  to: string,
+  templateId: string,
+  args: { name?: string | null; unsubscribeUrl?: string },
+): Promise<void> {
+  await send(to, promoEmail(templateId, args));
 }

@@ -30,3 +30,16 @@ export async function listEnquiries(): Promise<Lead[]> {
   });
   return docs.map(serialize);
 }
+
+/**
+ * All leads of every type (enquiry forms + WhatsApp/call click events) for the
+ * admin inbox. Fetches the latest batch; the UI filters by type client-side.
+ */
+export async function listLeads(): Promise<Lead[]> {
+  if (!hasDb) return [];
+  const docs = await prisma.lead.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: 300,
+  });
+  return docs.map(serialize);
+}

@@ -14,7 +14,7 @@ export async function POST(req: Request) {
         type,
         carId: typeof body.carId === 'string' ? body.carId : null,
         carName: typeof body.carName === 'string' ? body.carName : null,
-        status: 'closed', // click events are informational, not inbox items
+        status: 'new', // surface WhatsApp/call clicks as actionable leads
       },
     });
   } catch {

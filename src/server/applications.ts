@@ -12,6 +12,7 @@ export interface AppDoc {
 
 export interface AdminApplication {
   id: string;
+  slug: string | null;
   name: string;
   mobile: string;
   email: string;
@@ -58,6 +59,7 @@ export interface PublicApplication {
 function serialize(a: DbApplication): AdminApplication {
   return {
     id: a.id,
+    slug: a.slug,
     name: a.name,
     mobile: a.mobile,
     email: a.email,
@@ -122,14 +124,27 @@ export async function getApplicationsByEmail(email: string): Promise<PublicAppli
   }));
 }
 
-export async function getApplicationById(id: string): Promise<AdminApplication | null> {
-  if (!hasDb) return null;
-  const a = await prisma.application.findUnique({ where: { id } });
-  if (!a) return null;
+function withDocUrls(a: DbApplication): AdminApplication {
   const app = serialize(a);
   app.documentUrls = a.documents.map((d) => ({
     kind: d.kind,
     url: signedDocUrl(d.publicId, d.resourceType, d.format),
   }));
   return app;
+}
+
+export async function getApplicationById(id: string): Promise<AdminApplication | null> {
+  if (!hasDb) return null;
+  const a = await prisma.application.findUnique({ where: { id } });
+  return a ? withDocUrls(a) : null;
+}
+
+/** Look up by the human-friendly slug used in admin URLs (falls back to id). */
+export async function getApplicationBySlug(slug: string): Promise<AdminApplication | null> {
+  if (!hasDb) return null;
+  let a = await prisma.application.findFirst({ where: { slug } });
+  if (!a && /^[a-f0-9]{24}$/i.test(slug)) {
+    a = await prisma.application.findUnique({ where: { id: slug } });
+  }
+  return a ? withDocUrls(a) : null;
 }

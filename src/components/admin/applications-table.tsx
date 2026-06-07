@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { Eye, Trash2, FileText } from 'lucide-react';
 import { deleteApplication } from '@/actions/applications';
+import { CopyPhone } from '@/components/admin/copy-phone';
 import type { AdminApplication } from '@/server/applications';
 
 const statusStyle: Record<string, string> = {
@@ -57,7 +58,7 @@ export function ApplicationsTable({ apps }: { apps: AdminApplication[] }) {
                 <td className="p-4">
                   <div className="font-medium text-white">{a.name}</div>
                   <div className="text-xs text-white/40">{a.email}</div>
-                  <div className="text-xs text-white/40">{a.mobile}</div>
+                  <CopyPhone phone={a.mobile} className="text-xs text-white/40" />
                 </td>
                 <td className="p-4 text-white/80">{a.carName || '—'}</td>
                 <td className="p-4">
@@ -79,7 +80,7 @@ export function ApplicationsTable({ apps }: { apps: AdminApplication[] }) {
                 <td className="p-4">
                   <div className="flex items-center justify-end gap-2">
                     <Link
-                      href={`/admin/applications/${a.id}`}
+                      href={`/admin/applications/${a.slug ?? a.id}`}
                       aria-label="View"
                       className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 text-white/70 hover:text-white"
                     >

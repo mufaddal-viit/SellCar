@@ -1,11 +1,11 @@
-import { listEnquiries } from '@/server/leads';
+import { listLeads } from '@/server/leads';
 import { hasDb } from '@/lib/db/prisma';
 import { LeadsTable } from '@/components/admin/leads-table';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminLeadsPage() {
-  const leads = await listEnquiries();
+  const leads = await listLeads();
   const newCount = leads.filter((l) => l.status === 'new').length;
 
   return (
@@ -13,7 +13,7 @@ export default async function AdminLeadsPage() {
       <div className="mb-8">
         <h1 className="display-heading text-3xl text-white">Leads</h1>
         <p className="mt-1 text-sm text-white/50">
-          {leads.length} enquiries · {newCount} new
+          {leads.length} leads · {newCount} new
         </p>
       </div>
 

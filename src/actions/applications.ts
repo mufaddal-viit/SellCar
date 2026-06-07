@@ -5,7 +5,10 @@ import { prisma, hasDb } from '@/lib/db/prisma';
 import { destroyDoc, getAssetBytes } from '@/lib/cloudinary';
 import { verifyEmailToken } from '@/lib/otp';
 import { hasEmail, sendApprovedEmail, sendRejectedEmail } from '@/lib/email';
+import { upsertCustomer } from '@/server/customers';
 import { assertAdmin } from '@/lib/auth-guard';
+import { slugify } from '@/lib/utils';
+import { randomBytes } from 'node:crypto';
 import {
   applicationSubmitSchema,
   REQUIRED_DOC_KINDS,
@@ -64,10 +67,13 @@ export async function submitApplication(
     }
   }
 
+  const slug = `${slugify(d.name) || 'applicant'}-${randomBytes(2).toString('hex')}`;
+
   try {
     await prisma.application.create({
       data: {
         id: session.appId,
+        slug,
         name: d.name,
         mobile: d.mobile,
         email: session.email,
@@ -108,7 +114,18 @@ export async function submitApplication(
     return { error: 'Could not submit your application. Please try again.' };
   }
 
+  // Mirror into the master customer database.
+  await upsertCustomer({
+    name: d.name,
+    email: session.email,
+    phone: d.mobile,
+    source: 'application',
+    carInterest: carName,
+    status: 'active',
+  });
+
   revalidatePath('/admin/applications');
+  revalidatePath('/admin/customers');
   revalidatePath('/admin');
   return { ok: true };
 }

@@ -10,26 +10,13 @@ function getSecretKey(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
-export const authConfigured = Boolean(
-  process.env.AUTH_SECRET && process.env.ADMIN_USERNAME && process.env.ADMIN_PASSWORD,
-);
+/** Admin login is email-OTP based — requires the secret + the allowed email. */
+export const authConfigured = Boolean(process.env.AUTH_SECRET && process.env.ADMIN_EMAIL);
 
-/** Length-aware, non-short-circuiting string comparison. */
-function safeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
-}
-
-export function verifyCredentials(username: string, password: string): boolean {
-  const u = process.env.ADMIN_USERNAME || '';
-  const p = process.env.ADMIN_PASSWORD || '';
-  if (!u || !p) return false;
-  // Evaluate both to avoid leaking which field was wrong via timing.
-  const okU = safeEqual(username, u);
-  const okP = safeEqual(password, p);
-  return okU && okP;
+/** True only for the single configured admin email (case-insensitive). */
+export function isAdminEmail(email: string): boolean {
+  const allowed = (process.env.ADMIN_EMAIL || '').toLowerCase().trim();
+  return Boolean(allowed) && email.toLowerCase().trim() === allowed;
 }
 
 export async function createSessionToken(): Promise<string> {

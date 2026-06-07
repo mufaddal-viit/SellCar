@@ -21,12 +21,20 @@ export interface DashboardMetrics {
   soldThisMonth: number;
   soldValueTotal: number;
   avgDaysToSell: number | null;
+  // applications
+  applicationsTotal: number;
+  applicationsNew: number;
+  applicationsInReview: number;
+  applicationsApproved: number;
+  applicationsRejected: number;
   // enquiries
   enquiriesTotal: number;
   enquiriesNew: number;
   whatsappClicks: number;
   callClicks: number;
   topEnquiredCars: { carName: string; count: number }[];
+  // customers
+  customersTotal: number;
 }
 
 function countBy(items: AdminCar[], key: 'category' | 'brand' | 'fuel') {
@@ -67,11 +75,17 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     soldThisMonth: 0,
     soldValueTotal: 0,
     avgDaysToSell: null,
+    applicationsTotal: 0,
+    applicationsNew: 0,
+    applicationsInReview: 0,
+    applicationsApproved: 0,
+    applicationsRejected: 0,
     enquiriesTotal: 0,
     enquiriesNew: 0,
     whatsappClicks: 0,
     callClicks: 0,
     topEnquiredCars: [],
+    customersTotal: 0,
   };
 
   if (!hasDb) return base;
@@ -117,6 +131,23 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
   base.topEnquiredCars = grouped
     .filter((g) => g.carName)
     .map((g) => ({ carName: g.carName as string, count: g._count._all }));
+
+  // Application + customer metrics
+  const [appsTotal, appsNew, appsInReview, appsApproved, appsRejected, customersTotal] =
+    await Promise.all([
+      prisma.application.count(),
+      prisma.application.count({ where: { status: 'submitted' } }),
+      prisma.application.count({ where: { status: 'in_review' } }),
+      prisma.application.count({ where: { status: 'approved' } }),
+      prisma.application.count({ where: { status: 'rejected' } }),
+      prisma.customer.count(),
+    ]);
+  base.applicationsTotal = appsTotal;
+  base.applicationsNew = appsNew;
+  base.applicationsInReview = appsInReview;
+  base.applicationsApproved = appsApproved;
+  base.applicationsRejected = appsRejected;
+  base.customersTotal = customersTotal;
 
   return base;
 }

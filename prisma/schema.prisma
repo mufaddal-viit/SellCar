@@ -73,6 +73,9 @@ model Application {
   // Cloudinary document folder before the record exists.
   id    String @id @map("_id") @db.ObjectId
 
+  // Human-friendly URL slug (e.g. ahmed-hassan-3f9a) — used in admin URLs.
+  slug  String?
+
   // Applicant
   name       String
   mobile     String
@@ -124,6 +127,31 @@ model Application {
   @@index([status])
   @@index([carId])
   @@index([email])
+  @@index([slug])
+}
+
+/**
+ * Master customer database — every kind of client (leads, applicants, closed,
+ * no-deal, etc.). Auto-populated from enquiries & applications, and manageable
+ * by the admin.
+ */
+model Customer {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String?
+  phone       String?
+  status      String   @default("lead") // lead | active | customer | closed | no_deal | other
+  source      String?  // enquiry | application | whatsapp | call | manual
+  carInterest String?
+  notes       String?
+  emailOptOut Boolean  @default(false)
+  lastContactedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([email])
+  @@index([phone])
 }
 
 model OtpToken {

@@ -8,7 +8,7 @@ export const siteConfig: SiteConfig = {
     'Drive home your next car in the UAE with flexible monthly installments. Options like zero down payment and free insurance & registration on selected cars, with fast, hassle-free approvals.',
   url:
     process.env.NEXT_PUBLIC_SITE_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://buyanddrivecars.ae'),
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://buyanddrive.ae'),
   ogImage: '/logo.png',
   keywords: [
     'car finance UAE',
