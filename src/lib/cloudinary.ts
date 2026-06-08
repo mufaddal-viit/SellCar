@@ -99,10 +99,10 @@ export async function destroyDoc(publicId: string, resourceType = 'image') {
 }
 
 export const TESTIMONIALS_FOLDER = `${CLOUDINARY_FOLDER}/testimonials`;
-/** Feedback screenshots (mobile) shown in the carousel. */
-export const TESTIMONIAL_SCREENSHOTS_FOLDER = `${TESTIMONIALS_FOLDER}/screenshots`;
-/** Happy-customer photos shown as a gallery. */
-export const TESTIMONIAL_FACES_FOLDER = `${TESTIMONIALS_FOLDER}/faces`;
+/** Customer feedback screenshots shown in the carousel (sub-folder). */
+export const TESTIMONIAL_FEEDBACK_FOLDER = `${TESTIMONIALS_FOLDER}/feedback`;
+/** Happy-customer / WhatsApp photos shown as a gallery — live in the root. */
+export const TESTIMONIAL_FACES_FOLDER = TESTIMONIALS_FOLDER;
 
 export interface FolderImage {
   publicId: string;
@@ -111,19 +111,33 @@ export interface FolderImage {
   height: number;
 }
 
-/** List every image in a single Cloudinary folder (oldest first), via Search API. */
-export async function listFolderImages(folder: string): Promise<FolderImage[]> {
+/** Insert f_auto,q_auto so Cloudinary serves the smallest modern format. */
+function optimized(url: string): string {
+  return url.includes('/upload/') ? url.replace('/upload/', '/upload/f_auto,q_auto/') : url;
+}
+
+/**
+ * List every image in a single Cloudinary folder (oldest first), via Search API.
+ * Pass `excludeFolder` to drop assets that live in a given sub-folder (so the
+ * faces root doesn't pull in the feedback sub-folder).
+ */
+export async function listFolderImages(
+  folder: string,
+  opts?: { excludeFolder?: string },
+): Promise<FolderImage[]> {
   if (!hasCloudinary) return [];
   try {
+    let expression = `folder:${folder}`;
+    if (opts?.excludeFolder) expression += ` AND NOT folder:${opts.excludeFolder}`;
     const res = await cloudinary.search
-      .expression(`folder:${folder}`)
+      .expression(expression)
       .sort_by('created_at', 'asc')
       .max_results(100)
       .execute();
     type R = { public_id: string; secure_url: string; width: number; height: number };
     return (res.resources as R[]).map((r) => ({
       publicId: r.public_id,
-      url: r.secure_url,
+      url: optimized(r.secure_url),
       width: r.width,
       height: r.height,
     }));

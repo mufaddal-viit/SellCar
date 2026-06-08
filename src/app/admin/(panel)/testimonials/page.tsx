@@ -1,15 +1,17 @@
-import { listScreenshots, listFaces } from '@/server/testimonials';
+import { Images, MessageSquareQuote, Smile } from 'lucide-react';
+import { listFeedback, listFaces } from '@/server/testimonials';
 import {
   hasCloudinary,
-  TESTIMONIAL_SCREENSHOTS_FOLDER,
+  TESTIMONIAL_FEEDBACK_FOLDER,
   TESTIMONIAL_FACES_FOLDER,
 } from '@/lib/cloudinary';
 import { TestimonialManager } from '@/components/admin/testimonial-manager';
+import { StatCard } from '@/components/admin/stat-card';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminTestimonialsPage() {
-  const [screenshots, faces] = await Promise.all([listScreenshots(), listFaces()]);
+  const [feedback, faces] = await Promise.all([listFeedback(), listFaces()]);
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -18,6 +20,12 @@ export default async function AdminTestimonialsPage() {
         <p className="mt-1 text-sm text-white/50">
           Manage what shows in the testimonials section — kept separate so each is used correctly.
         </p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        <StatCard label="Total Photos" value={feedback.length + faces.length} icon={Images} />
+        <StatCard label="Feedback Screenshots" value={feedback.length} icon={MessageSquareQuote} />
+        <StatCard label="Customer Photos" value={faces.length} icon={Smile} />
       </div>
 
       {!hasCloudinary && (
@@ -29,8 +37,8 @@ export default async function AdminTestimonialsPage() {
       <TestimonialManager
         title="Feedback Screenshots"
         description="Customer feedback screenshots from WhatsApp/SMS. These appear in the swipable carousel on the home page (shown uncropped)."
-        folder={TESTIMONIAL_SCREENSHOTS_FOLDER}
-        photos={screenshots}
+        folder={TESTIMONIAL_FEEDBACK_FOLDER}
+        photos={feedback}
         aspect="aspect-[3/4]"
       />
 

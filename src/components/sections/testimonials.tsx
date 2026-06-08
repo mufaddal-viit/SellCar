@@ -2,22 +2,20 @@ import Image from 'next/image';
 import { SectionHeading } from '@/components/shared/section-heading';
 import { TestimonialsCarousel } from './testimonials-carousel';
 import {
-  getTestimonialScreenshots,
+  getTestimonialFeedback,
   getTestimonialFaces,
   type FolderImage,
 } from '@/server/testimonials';
-import { getTestimonialImages } from '@/lib/testimonial-images';
 
 export async function TestimonialsSection() {
-  const [screens, faces] = await Promise.all([
-    getTestimonialScreenshots(),
+  const [feedback, faces] = await Promise.all([
+    getTestimonialFeedback(),
     getTestimonialFaces(),
   ]);
 
-  // Fall back to local /public/testimonials if Cloudinary has no screenshots yet.
-  const screenshotUrls = screens.length ? screens.map((s) => s.url) : getTestimonialImages();
+  const feedbackUrls = feedback.map((s) => s.url);
 
-  if (screenshotUrls.length === 0 && faces.length === 0) return null;
+  if (feedbackUrls.length === 0 && faces.length === 0) return null;
 
   return (
     <section className="section overflow-hidden bg-brand-black">
@@ -30,9 +28,9 @@ export async function TestimonialsSection() {
           align="center"
         />
 
-        {screenshotUrls.length > 0 && (
+        {feedbackUrls.length > 0 && (
           <div className="mt-14">
-            <TestimonialsCarousel images={screenshotUrls} />
+            <TestimonialsCarousel images={feedbackUrls} />
           </div>
         )}
 
