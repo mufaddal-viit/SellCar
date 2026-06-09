@@ -31,7 +31,7 @@ export function ClientPhotosGallery() {
   const [loadingMore, setLoadingMore] = useState(false);
 
   const fetchPage = useCallback(async (c?: string) => {
-    const res = await fetch(
+    const res = await fetch(  
       `/api/testimonials${c ? `?cursor=${encodeURIComponent(c)}` : ''}`,
     );
     return (await res.json()) as { items: Photo[]; nextCursor: string | null };

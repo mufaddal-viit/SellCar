@@ -167,8 +167,9 @@ export async function listTestimonialPhotos(opts: {
   if (!hasCloudinary) return { items: [], nextCursor: null };
 
   let search = cloudinary.search
-    // `folder:foo/*` matches the folder and any sub-folders.
-    .expression(`folder:${TESTIMONIALS_FOLDER}/*`)
+    // Customer photos = the testimonials root, excluding the feedback sub-folder
+    // (feedback screenshots are shown separately in the testimonials carousel).
+    .expression(`folder:${TESTIMONIALS_FOLDER} AND NOT folder:${TESTIMONIAL_FEEDBACK_FOLDER}`)
     .with_field('context')
     .sort_by('created_at', 'desc')
     .max_results(opts.limit ?? 12);
@@ -179,23 +180,31 @@ export async function listTestimonialPhotos(opts: {
   type Resource = {
     asset_id?: string;
     public_id: string;
+    asset_folder?: string;
     secure_url: string;
     width: number;
     height: number;
     context?: { custom?: Record<string, string> } & Record<string, string>;
   };
 
-  const items: ClientPhoto[] = (res.resources as Resource[]).map((r) => {
-    const ctx = r.context?.custom ?? r.context ?? {};
-    return {
-      id: r.asset_id || r.public_id,
-      url: r.secure_url,
-      width: r.width,
-      height: r.height,
-      title: ctx.caption || ctx.title || undefined,
-      subtitle: ctx.alt || ctx.subtitle || undefined,
-    };
-  });
+  const items: ClientPhoto[] = (res.resources as Resource[])
+    // Belt-and-suspenders: drop anything that lives in the feedback sub-folder,
+    // regardless of how the Search API interprets the folder expression.
+    .filter(
+      (r) =>
+        !`${r.asset_folder ?? ''}/${r.public_id}`.includes(`${TESTIMONIALS_FOLDER}/feedback`),
+    )
+    .map((r) => {
+      const ctx = r.context?.custom ?? r.context ?? {};
+      return {
+        id: r.asset_id || r.public_id,
+        url: optimized(r.secure_url),
+        width: r.width,
+        height: r.height,
+        title: ctx.caption || ctx.title || undefined,
+        subtitle: ctx.alt || ctx.subtitle || undefined,
+      };
+    });
 
   return { items, nextCursor: (res.next_cursor as string) ?? null };
 }
