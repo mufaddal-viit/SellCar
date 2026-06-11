@@ -54,6 +54,7 @@ Add these in **Project Settings → Environment Variables** (or during the impor
 | `NEXT_PUBLIC_PHONE` | ✅ | `+919999999999` | Click-to-call number |
 | `NEXT_PUBLIC_WHATSAPP` | ✅ | `919999999999` | WhatsApp number — country code, no `+` or spaces |
 | `NEXT_PUBLIC_GA_ID` | optional | `G-XXXXXXXXXX` | Google Analytics 4 — leave blank to disable |
+| `NEXT_PUBLIC_GOOGLE_ADS_ID` | optional | `AW-XXXXXXXXX` | Google Ads conversion tag — leave blank to disable |
 | `NEXT_PUBLIC_GTM_ID` | optional | `GTM-XXXXXXX` | Google Tag Manager — leave blank to disable |
 | `NEXT_PUBLIC_META_PIXEL_ID` | optional | `1234567890` | Meta (Facebook) Pixel — leave blank to disable |
 | `MONGODB_URI` | ✅ for admin/DB | `mongodb+srv://…` | MongoDB Atlas connection string. If unset, the site serves the static seed data and the admin can't persist changes. |
