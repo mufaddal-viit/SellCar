@@ -8,7 +8,7 @@ interface Requirement {
 }
 
 const requirements: Requirement[] = [
-  { title: 'Minimum AED 5,000 salary', note: 'Paid monthly via salary transfer' },
+  { title: 'Minimum AED 5,000 salary', note: 'AED 4,000 for Emirates NBD Account Holders' },
   { title: 'Emirates ID', note: 'Valid and current' },
   { title: 'Valid UAE visa', note: 'Residence visa in passport' },
   { title: 'Passport copy', note: 'Photo and details page' },
