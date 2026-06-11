@@ -14,15 +14,21 @@ import { Search, Loader2, ArrowRight } from 'lucide-react';
 import { formatEMI, cn } from '@/lib/utils';
 import type { CarSearchHit } from '@/app/api/cars/search/route';
 
-const DEBOUNCE_MS = 250;
+const DEBOUNCE_MS = 550;
 
 interface CarSearchProps {
   /** Real published-car count, shown on the submit button (e.g. "Search 240 cars"). */
   total?: number;
   className?: string;
+  /**
+   * Fired when the user starts (true) or stops (false) interacting with the
+   * search. The hero uses it to pause its auto-advancing slideshow so the
+   * search isn't swapped out mid-use.
+   */
+  onActiveChange?: (active: boolean) => void;
 }
 
-export function CarSearch({ total, className }: CarSearchProps) {
+export function CarSearch({ total, className, onActiveChange }: CarSearchProps) {
   const router = useRouter();
   const listboxId = useId();
 
@@ -32,7 +38,15 @@ export function CarSearch({ total, className }: CarSearchProps) {
   const [matched, setMatched] = useState(0);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [focused, setFocused] = useState(false);
   const [highlight, setHighlight] = useState(-1);
+
+  // The user is "engaged" while the field is focused, has text, or the results
+  // dropdown is open. Report transitions up so the hero can pause its slideshow.
+  const active = focused || open || query.trim().length > 0;
+  useEffect(() => {
+    onActiveChange?.(active);
+  }, [active, onActiveChange]);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -94,17 +108,20 @@ export function CarSearch({ total, className }: CarSearchProps) {
   // Cancel any in-flight request when the component unmounts.
   useEffect(() => () => abortRef.current?.abort(), []);
 
-  // Close the dropdown on outside click.
+  // Close the dropdown (and drop focus) on outside click.
   useEffect(() => {
-    if (!open) return;
     function onDown(e: MouseEvent) {
       if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
         setOpen(false);
+        setFocused(false);
       }
     }
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
-  }, [open]);
+  }, []);
+
+  // Resume the slideshow if the search unmounts while still "active".
+  useEffect(() => () => onActiveChange?.(false), [onActiveChange]);
 
   const goToResults = useCallback(
     (q: string) => {
@@ -159,7 +176,11 @@ export function CarSearch({ total, className }: CarSearchProps) {
                 setQuery(e.target.value);
                 setOpen(true);
               }}
-              onFocus={() => query.trim() && setOpen(true)}
+              onFocus={() => {
+                setFocused(true);
+                if (query.trim()) setOpen(true);
+              }}
+              onBlur={() => setFocused(false)}
               onKeyDown={onKeyDown}
               placeholder="Make, model, or keyword"
               aria-label="Search cars by make, model or keyword"

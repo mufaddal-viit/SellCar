@@ -12,14 +12,18 @@ import { heroStats } from '@/content/site';
 
 export function Hero({ carCount }: { carCount?: number }) {
   const [active, setActive] = useState(0);
+  // Paused while the user is interacting with the search bar on slide 0, so the
+  // slideshow doesn't swap slides (and unmount the search) mid-interaction.
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
+    if (paused) return;
     const t = setInterval(
       () => setActive((i) => (i + 1) % heroSlides.length),
       6000,
     );
     return () => clearInterval(t);
-  }, []);
+  }, [paused]);
 
   const slide = heroSlides[active];
 
@@ -115,7 +119,11 @@ export function Hero({ carCount }: { carCount?: number }) {
             className="mt-10 flex flex-wrap items-center gap-3 sm:gap-4"
           >
             {active === 0 ? (
-              <CarSearch total={carCount} className="max-w-xl" />
+              <CarSearch
+                total={carCount}
+                className="max-w-xl"
+                onActiveChange={setPaused}
+              />
             ) : (
               <Button asChild size="lg">
                 <Link href={slide.cta.href}>
