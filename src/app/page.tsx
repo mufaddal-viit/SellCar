@@ -1,4 +1,5 @@
 import { Hero } from '@/components/sections/hero';
+import { getCars } from '@/server/cars';
 import { FeaturedCars } from '@/components/sections/featured-cars';
 import { WhyChooseUs } from '@/components/sections/why-choose-us';
 import { Requirements } from '@/components/sections/requirements';
@@ -8,10 +9,11 @@ import { ClientPhotos } from '@/components/sections/client-photos';
 import { FAQSection } from '@/components/sections/faq-section';
 import { CTASection } from '@/components/sections/cta-section';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const cars = await getCars();
   return (
     <>
-      <Hero />
+      <Hero carCount={cars.length} />
       <BrandsMarquee />
       <FeaturedCars />
       <WhyChooseUs />

@@ -9,11 +9,16 @@ export const metadata: Metadata = {
   alternates: { canonical: '/cars' },
 };
 
-export default async function CarsPage() {
+export default async function CarsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
   const cars = await getCars();
+  const { q } = await searchParams;
   return (
     <div className="bg-brand-black min-h-screen">
-      <CarGrid cars={cars} />
+      <CarGrid cars={cars} initialQuery={q ?? ''} />
     </div>
   );
 }

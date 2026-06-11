@@ -6,10 +6,11 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { CarSearch } from '@/components/cars/car-search';
 import { heroSlides } from '@/content/hero';
 import { heroStats } from '@/content/site';
 
-export function Hero() {
+export function Hero({ carCount }: { carCount?: number }) {
   const [active, setActive] = useState(0);
 
   useEffect(() => {
@@ -105,20 +106,24 @@ export function Hero() {
             </motion.p>
           </AnimatePresence>
 
-          {/* Primary call-to-action button(s) for the active slide */}
+          {/* First slide gets the live car-search bar; the rest keep the
+              per-slide call-to-action button. */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.45 }}
             className="mt-10 flex flex-wrap items-center gap-3 sm:gap-4"
           >
-            <Button asChild size="lg">
-              <Link href={slide.cta.href}>
-                {slide.cta.label}
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </Button>
-
+            {active === 0 ? (
+              <CarSearch total={carCount} className="max-w-xl" />
+            ) : (
+              <Button asChild size="lg">
+                <Link href={slide.cta.href}>
+                  {slide.cta.label}
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </Button>
+            )}
           </motion.div>
         </div>
 
