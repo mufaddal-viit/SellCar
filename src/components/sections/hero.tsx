@@ -56,8 +56,9 @@ export function Hero({ carCount }: { carCount?: number }) {
       {/* Decorative grid texture, faded out toward the bottom */}
       <div className="absolute inset-0 bg-grid-pattern bg-[size:64px_64px] opacity-30 mask-fade-bottom" />
 
-      {/* Foreground content column (label, title, subtitle, CTA) */}
-      <div className="container-wide relative z-10 flex min-h-screen min-h-[100svh] flex-col justify-center pt-24 pb-32">
+      {/* Foreground content column (label, title, subtitle, CTA).
+          z-30 keeps the search dropdown above the bottom stats strip (z-10). */}
+      <div className="container-wide relative z-30 flex min-h-screen min-h-[100svh] flex-col justify-center pt-24 pb-32">
         <div className="max-w-3xl">
           {/* Eyebrow: pulsing dot + per-slide tag text */}
           <AnimatePresence mode="wait">

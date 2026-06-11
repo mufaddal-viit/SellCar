@@ -216,7 +216,7 @@ export function CarSearch({ total, className, onActiveChange }: CarSearchProps) 
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
             transition={{ duration: 0.16, ease: 'easeOut' }}
-            className="absolute left-0 right-0 z-30 mt-2 overflow-hidden rounded-2xl border border-white/12 bg-brand-black/85 shadow-[0_30px_70px_-20px_rgba(0,0,0,0.9)] backdrop-blur-2xl"
+            className="absolute left-0 right-0 z-40 mt-2 overflow-hidden rounded-2xl border border-white/12 bg-brand-black/95 shadow-[0_30px_70px_-20px_rgba(0,0,0,0.95)] backdrop-blur-2xl"
           >
             <ul id={listboxId} role="listbox" className="max-h-[60vh] overflow-y-auto py-1.5">
               {hits.length === 0 && !loading ? (
