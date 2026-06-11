@@ -8,12 +8,12 @@ interface Requirement {
 }
 
 const requirements: Requirement[] = [
-  { title: 'Minimum AED 5,000 salary', note: 'AED 4,000 for Emirates NBD Account Holders' },
-  { title: 'Emirates ID', note: 'Valid and current' },
-  { title: 'Valid UAE visa', note: 'Residence visa in passport' },
-  { title: 'Passport copy', note: 'Photo and details page' },
-  { title: 'Salary certificate', note: 'Issued by your employer' },
-  { title: "Last 3 months' bank statement", note: 'Or simply your IBAN number' },
+  { title: 'Salary of AED 5,000+', note: 'Only AED 4,000 if you bank with Emirates NBD' },
+  { title: 'Emirates ID', note: 'Valid and ready — that\'s it' },
+  { title: 'UAE residence visa', note: 'Stamped in your passport' },
+  { title: 'Passport copy', note: 'Just the photo page — a phone snap works' },
+  { title: 'Salary certificate', note: 'One quick request to your employer' },
+  { title: 'Bank statement or IBAN', note: 'Last 3 months — or simply share your IBAN' },
 ];
 
 export function Requirements() {

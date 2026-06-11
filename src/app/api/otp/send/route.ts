@@ -78,7 +78,10 @@ export async function POST(req: Request) {
 
   try {
     await sendOtpEmail(email, code);
-  } catch {
+  } catch (err) {
+    // Log the underlying SMTP error (e.g. Gmail EAUTH) so failures are
+    // diagnosable in server logs instead of being silently swallowed.
+    console.error('[otp/send] sendOtpEmail failed:', err);
     return NextResponse.json(
       { error: 'Could not send the email. Please try again.' },
       { status: 502 },
