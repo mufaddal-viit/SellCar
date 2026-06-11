@@ -14,6 +14,7 @@ import {
   GoogleTagManagerNoScript,
 } from '@/components/analytics/google-tag-manager';
 import { MetaPixel } from '@/components/analytics/meta-pixel';
+import { Analytics } from '@vercel/analytics/next';
 import { OrganizationJsonLd } from '@/components/seo/json-ld';
 import { siteConfig } from '@/content/site';
 
@@ -107,6 +108,7 @@ export default function RootLayout({
         </Providers>
         <GoogleAnalytics />
         <MetaPixel />
+        <Analytics />
       </body>
     </html>
   );
