@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { SelectField } from '@/components/ui/select-field';
+import { slugify } from '@/lib/utils';
 import type { AdminCar } from '@/server/cars';
 import type { CarInput } from '@/lib/validation';
 import type { MediaAsset } from '@/types';
@@ -56,6 +57,14 @@ export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: s
   const [featureInput, setFeatureInput] = useState('');
   const [images, setImages] = useState<MediaAsset[]>(car?.imagesFull ?? []);
   const [videos, setVideos] = useState<MediaAsset[]>(car?.videosFull ?? []);
+
+  // Each car's media goes into its own sub-folder named after the car, e.g.
+  // "carimages/todaycar". For an existing car we keep using the slug of its
+  // saved name (stable, so edits add to the same folder); for a new car we use
+  // the name being typed. Empty until a name is entered (uploads are disabled
+  // until then), so every car's photos land in a dedicated folder.
+  const carSlug = slugify(car?.name ?? f.name);
+  const carFolder = carSlug ? `${uploadFolder}/${carSlug}` : '';
 
   const set = (k: keyof typeof f, v: string | boolean) =>
     setF((prev) => ({ ...prev, [k]: v }));
@@ -222,8 +231,8 @@ export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: s
 
       <Section title="Media">
         <div className="space-y-6">
-          <MediaManager label="Photos" hint="First photo is the cover" resourceType="image" folder={uploadFolder} value={images} onChange={setImages} />
-          <MediaManager label="Videos" resourceType="video" folder={uploadFolder} value={videos} onChange={setVideos} />
+          <MediaManager label="Photos" hint="First photo is the cover" resourceType="image" folder={carFolder} value={images} onChange={setImages} />
+          <MediaManager label="Videos" resourceType="video" folder={carFolder} value={videos} onChange={setVideos} />
         </div>
       </Section>
 

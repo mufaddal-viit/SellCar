@@ -19,7 +19,9 @@ interface Props {
   resourceType: 'image' | 'video';
   folder: string;
   value: MediaAsset[];
-  onChange: (next: MediaAsset[]) => void;
+  // Accepts a functional updater (like React's setState) so rapid, successive
+  // uploads each append to the freshest array instead of racing on a stale one.
+  onChange: (next: MediaAsset[] | ((prev: MediaAsset[]) => MediaAsset[])) => void;
 }
 
 interface UploadInfo {
@@ -35,15 +37,27 @@ export function MediaManager({ label, hint, resourceType, folder, value, onChang
   const isImage = resourceType === 'image';
 
   const add = (info: UploadInfo) => {
-    if (value.some((m) => m.publicId === info.public_id)) return;
-    onChange([
-      ...value,
-      { url: info.secure_url, publicId: info.public_id, width: info.width, height: info.height },
-    ]);
+    // Functional updater: each upload's onSuccess fires separately and in quick
+    // succession (esp. on mobile), so appending to a captured `value` would let
+    // later callbacks overwrite earlier ones — only the last photo survived.
+    // Building from `prev` keeps every uploaded photo. De-dupe here too.
+    onChange((prev) =>
+      prev.some((m) => m.publicId === info.public_id)
+        ? prev
+        : [
+            ...prev,
+            {
+              url: info.secure_url,
+              publicId: info.public_id,
+              width: info.width,
+              height: info.height,
+            },
+          ],
+    );
   };
 
   const remove = (publicId: string) =>
-    onChange(value.filter((m) => m.publicId !== publicId));
+    onChange((prev) => prev.filter((m) => m.publicId !== publicId));
 
   /** Move the item at `from` to position `to` (used by drag-drop and arrows). */
   const reorder = (from: number, to: number) => {
@@ -169,31 +183,41 @@ export function MediaManager({ label, hint, resourceType, folder, value, onChang
         </div>
       )}
 
-      <CldUploadWidget
-        signatureEndpoint="/api/admin/sign-upload"
-        options={{
-          folder,
-          resourceType,
-          multiple: true,
-          sources: ['local', 'url', 'camera'],
-        }}
-        onSuccess={(result) => {
-          if (result?.info && typeof result.info === 'object') {
-            add(result.info as unknown as UploadInfo);
-          }
-        }}
-      >
-        {({ open }) => (
-          <button
-            type="button"
-            onClick={() => open()}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/15 py-4 text-sm text-white/60 transition-colors hover:border-brand-red/50 hover:text-white"
-          >
-            <UploadCloud className="h-4 w-4" />
-            Upload {isImage ? 'photos' : 'videos'}
-          </button>
-        )}
-      </CldUploadWidget>
+      {/* Uploads are gated on a destination folder. The car form leaves `folder`
+          empty until a car name is entered, so each car's media lands in its own
+          named folder rather than a shared/unnamed one. */}
+      {!folder ? (
+        <div className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/10 py-4 text-sm text-white/35">
+          <UploadCloud className="h-4 w-4" />
+          Enter the car name first to upload {isImage ? 'photos' : 'videos'}
+        </div>
+      ) : (
+        <CldUploadWidget
+          signatureEndpoint="/api/admin/sign-upload"
+          options={{
+            folder,
+            resourceType,
+            multiple: true,
+            sources: ['local', 'url', 'camera'],
+          }}
+          onSuccess={(result) => {
+            if (result?.info && typeof result.info === 'object') {
+              add(result.info as unknown as UploadInfo);
+            }
+          }}
+        >
+          {({ open }) => (
+            <button
+              type="button"
+              onClick={() => open()}
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/15 py-4 text-sm text-white/60 transition-colors hover:border-brand-red/50 hover:text-white"
+            >
+              <UploadCloud className="h-4 w-4" />
+              Upload {isImage ? 'photos' : 'videos'}
+            </button>
+          )}
+        </CldUploadWidget>
+      )}
     </div>
   );
 }

@@ -3,8 +3,17 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
-import { Pencil, Trash2, Star, Eye, EyeOff } from 'lucide-react';
+import { useMemo, useState, useTransition } from 'react';
+import {
+  Pencil,
+  Trash2,
+  Star,
+  Eye,
+  EyeOff,
+  ChevronUp,
+  ChevronDown,
+  ChevronsUpDown,
+} from 'lucide-react';
 import {
   setStatus,
   toggleFeatured,
@@ -18,10 +27,41 @@ import type { CarStatus } from '@/types';
 
 const STATUSES: CarStatus[] = ['available', 'reserved', 'sold'];
 
+/** "12 Jun 2026" — short, locale-stable date for the table. */
+function formatDate(iso: string): string {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+type SortDir = 'asc' | 'desc' | null;
+
 export function CarsTable({ cars }: { cars: AdminCar[] }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
+
+  // null → server order (newest first); click cycles desc → asc → desc.
+  const [sortDir, setSortDir] = useState<SortDir>(null);
+
+  const toggleSort = () =>
+    setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'));
+
+  const sortedCars = useMemo(() => {
+    if (!sortDir) return cars;
+    const ts = (c: AdminCar) => {
+      const t = new Date(c.createdAt).getTime();
+      return Number.isNaN(t) ? 0 : t; // undated (seed) rows sink to the bottom on desc
+    };
+    return [...cars].sort((a, b) =>
+      sortDir === 'asc' ? ts(a) - ts(b) : ts(b) - ts(a),
+    );
+  }, [cars, sortDir]);
 
   const run = (id: string, fn: () => Promise<unknown>) => {
     setBusyId(id);
@@ -45,11 +85,29 @@ export function CarsTable({ cars }: { cars: AdminCar[] }) {
 
   return (
     <div className="overflow-x-auto rounded-2xl border border-white/[0.07]">
-      <table className="w-full min-w-[820px] text-sm">
+      <table className="w-full min-w-[940px] text-sm">
         <thead>
           <tr className="border-b border-white/[0.06] text-left text-[11px] uppercase tracking-widest text-white/40">
             <th className="p-4 font-semibold">Car</th>
             <th className="p-4 font-semibold">Price / EMI</th>
+            <th className="p-0 font-semibold">
+              <button
+                type="button"
+                onClick={toggleSort}
+                aria-label="Sort by date created"
+                title="Sort by date created"
+                className="flex w-full items-center gap-1.5 p-4 uppercase tracking-widest transition-colors hover:text-white"
+              >
+                Created
+                {sortDir === 'asc' ? (
+                  <ChevronUp className="h-3.5 w-3.5 text-brand-red" />
+                ) : sortDir === 'desc' ? (
+                  <ChevronDown className="h-3.5 w-3.5 text-brand-red" />
+                ) : (
+                  <ChevronsUpDown className="h-3.5 w-3.5 text-white/30" />
+                )}
+              </button>
+            </th>
             <th className="p-4 font-semibold">Status</th>
             <th className="p-4 font-semibold">Featured</th>
             <th className="p-4 font-semibold">Live</th>
@@ -57,7 +115,7 @@ export function CarsTable({ cars }: { cars: AdminCar[] }) {
           </tr>
         </thead>
         <tbody className="divide-y divide-white/[0.06]">
-          {cars.map((car) => {
+          {sortedCars.map((car) => {
             const busy = pending && busyId === car.id;
             return (
               <tr key={car.id} className={busy ? 'opacity-50' : undefined}>
@@ -79,6 +137,9 @@ export function CarsTable({ cars }: { cars: AdminCar[] }) {
                 <td className="p-4">
                   <div className="text-white">{formatPrice(car.price)}</div>
                   <div className="text-xs text-white/40">{formatEMI(car.emiFrom)}/mo</div>
+                </td>
+                <td className="p-4">
+                  <div className="whitespace-nowrap text-white/70">{formatDate(car.createdAt)}</div>
                 </td>
                 <td className="p-4">
                   <SelectField

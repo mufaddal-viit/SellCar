@@ -11,6 +11,8 @@ export const CARS_TAG = 'cars';
 export interface AdminCar extends Car {
   imagesFull: MediaAsset[];
   videosFull: MediaAsset[];
+  /** ISO creation timestamp — shown in the admin cars table. */
+  createdAt: string;
 }
 
 function toMedia(list: { url: string; publicId: string; width?: number | null; height?: number | null }[]): MediaAsset[] {
@@ -59,6 +61,7 @@ function serialize(doc: DbCar): AdminCar {
     firstPaymentAfter2Months: doc.firstPaymentAfter2Months,
     imagesFull,
     videosFull,
+    createdAt: doc.createdAt.toISOString(),
   };
 }
 
@@ -111,6 +114,7 @@ export async function getAllCars(): Promise<AdminCar[]> {
       published: c.published ?? true,
       imagesFull: c.images.map((url) => ({ url, publicId: '' })),
       videosFull: (c.videos ?? []).map((url) => ({ url, publicId: '' })),
+      createdAt: '', // seed data has no DB timestamp
     }));
   }
   const docs = await prisma.car.findMany({ orderBy: { createdAt: 'desc' } });

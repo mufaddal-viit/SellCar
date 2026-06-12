@@ -14,7 +14,7 @@ export const hasCloudinary = Boolean(
 );
 
 export const CLOUDINARY_FOLDER =
-  process.env.CLOUDINARY_FOLDER_NAME || 'driveeasy/cars';
+  process.env.CLOUDINARY_FOLDER_NAME || 'carimages';
 
 /** Sign the exact params the upload widget asks us to sign (signed-upload contract). */
 export function signParams(paramsToSign: Record<string, unknown>): string {
