@@ -5,7 +5,11 @@ import { redirect } from 'next/navigation';
 import { prisma, hasDb } from '@/lib/db/prisma';
 import { CARS_TAG } from '@/server/cars';
 import { carInputSchema } from '@/lib/validation';
-import { destroyAsset } from '@/lib/cloudinary';
+import {
+  destroyAsset,
+  destroyCarFolder,
+  CLOUDINARY_FOLDER,
+} from '@/lib/cloudinary';
 import { assertAdmin } from '@/lib/auth-guard';
 import { slugify } from '@/lib/utils';
 import type { MediaAsset } from '@/types';
@@ -134,10 +138,19 @@ export async function deleteCar(id: string) {
   if (!hasDb) return;
   const car = await prisma.car.findUnique({ where: { id } });
   if (!car) return;
+
   await Promise.all([
+    // 1) Wipe the car's whole media folder — catches orphaned uploads the DB
+    //    never recorded, and removes the now-empty folder. Derived from the
+    //    car's name the same way the upload form builds it.
+    destroyCarFolder(`${CLOUDINARY_FOLDER}/${slugify(car.name)}`),
+    // 2) Also destroy each saved asset by publicId. Belt-and-suspenders: covers
+    //    a car that was renamed after upload (its saved assets live under the
+    //    old slug folder, which the prefix wipe above wouldn't match).
     ...car.images.map((m) => m.publicId && destroyAsset(m.publicId, 'image')),
     ...car.videos.map((m) => m.publicId && destroyAsset(m.publicId, 'video')),
   ]);
+
   await prisma.car.delete({ where: { id } });
   revalidateCars(car.slug);
   revalidatePath('/admin/cars');

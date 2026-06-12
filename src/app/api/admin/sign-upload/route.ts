@@ -15,5 +15,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Missing paramsToSign' }, { status: 400 });
   }
   const signature = signParams(paramsToSign);
-  return NextResponse.json({ signature });
+  // Also return the public upload config so the client can post to Cloudinary
+  // without relying on NEXT_PUBLIC_* being set.
+  return NextResponse.json({
+    signature,
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+  });
 }

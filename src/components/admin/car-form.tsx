@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, X, Save } from 'lucide-react';
+import { Plus, X, Save, Loader2 } from 'lucide-react';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { saveCar, type SaveCarState } from '@/actions/cars';
-import { MediaManager } from './media-manager';
+import { MediaManager, type MediaItem } from './media-manager';
+import { uploadCarMedia } from '@/lib/upload-car-media';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -12,7 +14,6 @@ import { SelectField } from '@/components/ui/select-field';
 import { slugify } from '@/lib/utils';
 import type { AdminCar } from '@/server/cars';
 import type { CarInput } from '@/lib/validation';
-import type { MediaAsset } from '@/types';
 
 const CATEGORIES = ['Sedan', 'SUV', 'Hatchback', 'Luxury', 'Electric', 'Sports'];
 const FUELS = ['Petrol', 'Diesel', 'Electric', 'Hybrid', 'CNG'];
@@ -22,7 +23,6 @@ const STATUSES = ['available', 'reserved', 'sold'];
 
 export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: string }) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
   const [state, setState] = useState<SaveCarState>({});
 
   const [f, setF] = useState({
@@ -55,8 +55,13 @@ export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: s
 
   const [features, setFeatures] = useState<string[]>(car?.features ?? []);
   const [featureInput, setFeatureInput] = useState('');
-  const [images, setImages] = useState<MediaAsset[]>(car?.imagesFull ?? []);
-  const [videos, setVideos] = useState<MediaAsset[]>(car?.videosFull ?? []);
+  const [images, setImages] = useState<MediaItem[]>(car?.imagesFull ?? []);
+  const [videos, setVideos] = useState<MediaItem[]>(car?.videosFull ?? []);
+
+  // Upload-on-save progress shown on the Save button. `busy` covers the whole
+  // upload+save window (we don't redirect until the DB write completes).
+  const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<string | null>(null);
 
   // Each car's media goes into its own sub-folder named after the car, e.g.
   // "carimages/todaycar". For an existing car we keep using the slug of its
@@ -75,41 +80,122 @@ export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: s
     setFeatureInput('');
   };
 
-  const submit = () => {
-    const payload: CarInput = {
-      name: f.name,
-      brand: f.brand,
-      category: f.category as CarInput['category'],
-      price: Number(f.price || 0),
-      downPayment: Number(f.downPayment || 0),
-      emiFrom: Number(f.emiFrom || 0),
-      tenure: Number(f.tenure || 60),
-      year: Number(f.year || 0),
-      fuel: f.fuel as CarInput['fuel'],
-      transmission: f.transmission as CarInput['transmission'],
-      mileage: f.mileage,
-      seating: Number(f.seating || 5),
-      engine: f.engine,
-      power: f.power,
-      features,
-      description: f.description,
-      badge: (f.badge || null) as CarInput['badge'],
-      featured: f.featured,
-      status: f.status as CarInput['status'],
-      published: f.published,
-      priceType: f.priceType as CarInput['priceType'],
-      monthlyApprox: f.monthlyApprox,
-      freeInsurance: f.freeInsurance,
-      freeRegistration: f.freeRegistration,
-      zeroDownpayment: f.zeroDownpayment,
-      firstPaymentAfter2Months: f.firstPaymentAfter2Months,
-      images,
-      videos,
-    };
-    startTransition(async () => {
+  /**
+   * Upload every pending (locally-held) item in `list` to Cloudinary, in order,
+   * reporting progress. Returns the list with pending items replaced by their
+   * uploaded MediaAsset; already-uploaded items pass through untouched. Throws
+   * on the first failure so the caller can abort the save and keep the form.
+   */
+  const uploadPending = async (
+    list: MediaItem[],
+    kind: 'photo' | 'video',
+    setList: (next: MediaItem[]) => void,
+  ): Promise<MediaItem[]> => {
+    const pendingIdx = list
+      .map((m, i) => (m.file ? i : -1))
+      .filter((i) => i >= 0);
+    if (pendingIdx.length === 0) return list;
+
+    const resourceType = kind === 'photo' ? 'image' : 'video';
+    let next = [...list];
+    let done = 0;
+    for (const i of pendingIdx) {
+      done++;
+      setProgress(
+        `Uploading ${kind} ${done} of ${pendingIdx.length}…`,
+      );
+      const uploaded = await uploadCarMedia(next[i].file!, carFolder, resourceType);
+      // Replace the pending entry with the uploaded asset (drop the local file),
+      // and reflect it back into form state so a retry won't re-upload it.
+      next = next.map((m, idx) => (idx === i ? uploaded : m));
+      setList(next);
+    }
+    return next;
+  };
+
+  const submit = async () => {
+    if (busy) return;
+    setState({});
+    setBusy(true);
+    try {
+      // 1) Upload any not-yet-uploaded media first. Abort the whole save if any
+      //    upload fails — nothing is written to the DB, and uploaded items are
+      //    kept in state so a retry skips them.
+      let uploadedImages: MediaItem[];
+      let uploadedVideos: MediaItem[];
+      try {
+        uploadedImages = await uploadPending(images, 'photo', setImages);
+        uploadedVideos = await uploadPending(videos, 'video', setVideos);
+      } catch (e) {
+        setProgress(null);
+        setState({
+          error:
+            e instanceof Error
+              ? `${e.message} Your details are kept — please try saving again.`
+              : 'Upload failed. Your details are kept — please try saving again.',
+        });
+        return;
+      }
+
+      // 2) Strip any leftover `file` field; the DB only wants url + publicId.
+      const toAsset = (m: MediaItem) => ({
+        url: m.url,
+        publicId: m.publicId,
+        width: m.width,
+        height: m.height,
+      });
+
+      const payload: CarInput = {
+        name: f.name,
+        brand: f.brand,
+        category: f.category as CarInput['category'],
+        price: Number(f.price || 0),
+        downPayment: Number(f.downPayment || 0),
+        emiFrom: Number(f.emiFrom || 0),
+        tenure: Number(f.tenure || 60),
+        year: Number(f.year || 0),
+        fuel: f.fuel as CarInput['fuel'],
+        transmission: f.transmission as CarInput['transmission'],
+        mileage: f.mileage,
+        seating: Number(f.seating || 5),
+        engine: f.engine,
+        power: f.power,
+        features,
+        description: f.description,
+        badge: (f.badge || null) as CarInput['badge'],
+        featured: f.featured,
+        status: f.status as CarInput['status'],
+        published: f.published,
+        priceType: f.priceType as CarInput['priceType'],
+        monthlyApprox: f.monthlyApprox,
+        freeInsurance: f.freeInsurance,
+        freeRegistration: f.freeRegistration,
+        zeroDownpayment: f.zeroDownpayment,
+        firstPaymentAfter2Months: f.firstPaymentAfter2Months,
+        images: uploadedImages.map(toAsset),
+        videos: uploadedVideos.map(toAsset),
+      };
+
+      // 3) Persist. On success, saveCar redirects to /admin/cars (server side);
+      //    we keep `busy` true so the button stays in its saving state until the
+      //    navigation happens.
+      setProgress('Saving…');
       const res = await saveCar(car?.id ?? null, payload);
-      if (res?.error) setState(res);
-    });
+      // On success saveCar throws a redirect (handled by Next), so we only get
+      // here on error. Surface it and re-enable the form.
+      if (res?.error) {
+        setState(res);
+        setProgress(null);
+        setBusy(false);
+      }
+    } catch (e) {
+      // A thrown redirect from saveCar is Next's NEXT_REDIRECT — let it bubble so
+      // navigation happens; only real errors land in this branch.
+      if (isRedirectError(e)) throw e;
+      setState({ error: 'Something went wrong while saving. Please try again.' });
+      setProgress(null);
+      setBusy(false);
+    }
   };
 
   const err = (field: string) => state.fieldErrors?.[field]?.[0];
@@ -231,8 +317,8 @@ export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: s
 
       <Section title="Media">
         <div className="space-y-6">
-          <MediaManager label="Photos" hint="First photo is the cover" resourceType="image" folder={carFolder} value={images} onChange={setImages} />
-          <MediaManager label="Videos" resourceType="video" folder={carFolder} value={videos} onChange={setVideos} />
+          <MediaManager label="Photos" hint="First photo is the cover" resourceType="image" folder={carFolder} value={images} onChange={setImages} disabled={busy} />
+          <MediaManager label="Videos" resourceType="video" folder={carFolder} value={videos} onChange={setVideos} disabled={busy} />
         </div>
       </Section>
 
@@ -291,13 +377,33 @@ export function CarForm({ car, uploadFolder }: { car?: AdminCar; uploadFolder: s
         </Grid>
       </Section>
 
-      <div className="flex items-center justify-end gap-3 border-t border-white/[0.06] pt-6">
-        <Button type="button" variant="ghost" onClick={() => router.push('/admin/cars')}>
+      <div className="flex flex-wrap items-center justify-end gap-3 border-t border-white/[0.06] pt-6">
+        {/* Live upload/save status — visible until the DB write finishes. */}
+        {busy && progress && (
+          <span className="mr-auto inline-flex items-center gap-2 text-sm text-amber-300">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            {progress}
+          </span>
+        )}
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => router.push('/admin/cars')}
+          disabled={busy}
+        >
           Cancel
         </Button>
-        <Button type="button" onClick={submit} disabled={pending}>
-          <Save className="h-4 w-4" />
-          {pending ? 'Saving…' : car ? 'Save Changes' : 'Create Car'}
+        <Button type="button" onClick={submit} disabled={busy}>
+          {busy ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4" />
+          )}
+          {busy
+            ? progress ?? 'Saving…'
+            : car
+              ? 'Save Changes'
+              : 'Create Car'}
         </Button>
       </div>
     </div>

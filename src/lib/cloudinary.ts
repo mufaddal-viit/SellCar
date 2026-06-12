@@ -80,8 +80,38 @@ export async function destroyAsset(
   if (!hasCloudinary || !publicId) return;
   try {
     await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
-  } catch {
-    // Non-fatal: the DB record is the source of truth for the site.
+  } catch (err) {
+    // Non-fatal: the DB record is the source of truth for the site. Log so a
+    // failed delete leaves a trace instead of a silent orphan.
+    console.error(`[cloudinary] destroy failed for "${publicId}":`, err);
+  }
+}
+
+/**
+ * Delete an entire car media folder and everything under it — images, videos,
+ * and any orphaned uploads the DB never recorded — then remove the now-empty
+ * folder itself. Best-effort and non-fatal; failures are logged.
+ */
+export async function destroyCarFolder(folder: string) {
+  if (!hasCloudinary || !folder) return;
+  // delete_resources_by_prefix handles one resource type at a time.
+  for (const resourceType of ['image', 'video'] as const) {
+    try {
+      await cloudinary.api.delete_resources_by_prefix(folder, {
+        resource_type: resourceType,
+      });
+    } catch (err) {
+      console.error(
+        `[cloudinary] delete_resources_by_prefix failed for "${folder}" (${resourceType}):`,
+        err,
+      );
+    }
+  }
+  // Remove the (now empty) folder. Fails harmlessly if it isn't empty/doesn't exist.
+  try {
+    await cloudinary.api.delete_folder(folder);
+  } catch (err) {
+    console.error(`[cloudinary] delete_folder failed for "${folder}":`, err);
   }
 }
 
