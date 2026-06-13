@@ -8,7 +8,7 @@ interface Requirement {
 }
 
 const requirements: Requirement[] = [
-  { title: 'Salary of AED 5,000+', note: 'Only AED 4,000 if you bank with Emirates NBD' },
+  { title: 'Salary of AED 5,000+', note: 'Only AED 4,000 If salary is credited to Emirates NBD or Emirates Islamic' },
   { title: 'Emirates ID', note: 'Valid and ready — that\'s it' },
   { title: 'UAE residence visa', note: 'Stamped in your passport' },
   { title: 'Passport copy', note: 'Just the photo page — a phone snap works' },
