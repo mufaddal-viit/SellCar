@@ -68,9 +68,12 @@ Add these in **Project Settings → Environment Variables** (or during the impor
 | `ADMIN_USERNAME` | ✅ for admin | `admin` | Admin login username |
 | `ADMIN_PASSWORD` | ✅ for admin | strong password | Admin login password |
 | `AUTH_SECRET` | ✅ for admin | 32-byte hex | Signs the admin session cookie + OTP/email-verify tokens. Generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
-| `EMAIL_USER` | ✅ for /services | `you@gmail.com` | Gmail address that sends OTP codes |
-| `EMAIL_APP_PASSWORD` | ✅ for /services | app password | Google **App Password** (not your login password) — myaccount.google.com/apppasswords |
-| `EMAIL_FROM` | optional | `"Buy&Drive Cars" <you@gmail.com>` | Display From; defaults to EMAIL_USER |
+| `SMTP_HOST` | ✅ for /services | `mail.buyanddrive.ae` | SMTP server (Tasjeel-hosted mailbox) that sends OTP codes & notifications |
+| `SMTP_PORT` | optional | `587` | SMTP port; defaults to `587` (STARTTLS). Use `465` for SSL |
+| `SMTP_SECURE` | optional | `false` | `true` only for port 465 (SSL); `false` for 587 (STARTTLS) |
+| `SMTP_USER` | ✅ for /services | `info@buyanddrive.ae` | Mailbox username |
+| `SMTP_PASSWORD` | ✅ for /services | mailbox password | The mailbox account password |
+| `EMAIL_FROM` | optional | `"Buy&Drive Cars" <info@buyanddrive.ae>` | Display From; defaults to SMTP_USER |
 
 For each variable, tick **Production**, **Preview**, and **Development** so it's available everywhere.
 

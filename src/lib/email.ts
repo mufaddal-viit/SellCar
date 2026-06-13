@@ -7,17 +7,22 @@ import { rejectionEmail } from '@/emails/rejection-email';
 import { promoEmail } from '@/emails/promo-email';
 
 export const hasEmail = Boolean(
-  process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD,
+  process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD,
 );
 
 let transporter: Transporter | null = null;
 function getTransport(): Transporter {
   if (!transporter) {
+    // SMTP via the Tasjeel-hosted mailbox. Port 587 with secure:false uses
+    // STARTTLS (nodemailer upgrades the connection automatically); port 465
+    // would use secure:true.
     transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT) || 587,
+      secure: process.env.SMTP_SECURE === 'true',
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_APP_PASSWORD,
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD,
       },
     });
   }
@@ -26,7 +31,7 @@ function getTransport(): Transporter {
 
 async function send(to: string, content: EmailContent): Promise<void> {
   const from =
-    process.env.EMAIL_FROM || `"${siteConfig.name}" <${process.env.EMAIL_USER}>`;
+    process.env.EMAIL_FROM || `"${siteConfig.name}" <${process.env.SMTP_USER}>`;
   await getTransport().sendMail({ from, to, ...content });
 }
 
