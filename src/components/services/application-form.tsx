@@ -212,14 +212,25 @@ export function ApplicationForm({ cars }: { cars: CarOption[] }) {
 
   return (
     <div className="space-y-6">
-      {/* Honeypot — hidden from real users, catches bots */}
+      {/* Honeypot — hidden from real users, catches bots.
+          IMPORTANT: the field name must NOT be one browser autofill targets
+          (e.g. "company", "name", "email"), or autofill silently fills it for
+          real users and the server treats them as bots. Use a neutral name and
+          opt out of autofill several ways. */}
       <input
         type="text"
-        name="company"
+        name="contact_pref_xq"
         value={hp}
         onChange={(e) => setHp(e.target.value)}
+        // Read-only until focused: Chrome won't autofill a read-only input, so
+        // real users never trip the honeypot; a bot scripting .value still does.
+        readOnly
+        onFocus={(e) => e.currentTarget.removeAttribute('readonly')}
         tabIndex={-1}
         autoComplete="off"
+        data-lpignore="true"
+        data-1p-ignore="true"
+        data-form-type="other"
         aria-hidden="true"
         className="absolute left-[-9999px] h-0 w-0 opacity-0"
       />
