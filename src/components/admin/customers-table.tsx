@@ -13,6 +13,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { SelectField } from '@/components/ui/select-field';
 import { CopyPhone } from '@/components/admin/copy-phone';
+import {
+  DateCell,
+  SortHeader,
+  StatusCounts,
+  type SortDir,
+} from '@/components/admin/table-bits';
+import { toTimestamp } from '@/lib/utils';
 import type { AdminCustomer } from '@/server/customers';
 
 const STATUS_OPTIONS = [
@@ -55,9 +62,44 @@ export function CustomersTable({ customers }: { customers: AdminCustomer[] }) {
   const [nf, setNf] = useState({ name: '', email: '', phone: '', status: 'lead' });
   const [addErr, setAddErr] = useState<string | null>(null);
 
-  const rows = useMemo(
-    () => (filter === 'all' ? customers : customers.filter((c) => c.status === filter)),
-    [customers, filter],
+  // Sort by "added" or "last contacted"; null = default (server order).
+  const [sortKey, setSortKey] = useState<'created' | 'contacted'>('created');
+  const [sortDir, setSortDir] = useState<SortDir>(null);
+  const toggleSort = (key: 'created' | 'contacted') =>
+    setSortDir((d) => {
+      if (sortKey !== key) {
+        setSortKey(key);
+        return 'desc';
+      }
+      return d === 'desc' ? 'asc' : 'desc';
+    });
+
+  const rows = useMemo(() => {
+    const base =
+      filter === 'all'
+        ? customers
+        : filter === 'future_interest'
+          ? customers.filter((c) => c.futureInterest)
+          : customers.filter((c) => c.status === filter);
+    if (!sortDir) return base;
+    const pick = (c: AdminCustomer) =>
+      sortKey === 'contacted' ? c.lastContactedAt : c.createdAt;
+    return [...base].sort((a, b) =>
+      sortDir === 'asc'
+        ? toTimestamp(pick(a)) - toTimestamp(pick(b))
+        : toTimestamp(pick(b)) - toTimestamp(pick(a)),
+    );
+  }, [customers, filter, sortKey, sortDir]);
+
+  const counts = useMemo(() => {
+    const c: Record<string, number> = {};
+    for (const cust of customers) c[cust.status] = (c[cust.status] ?? 0) + 1;
+    return c;
+  }, [customers]);
+
+  const futureInterestCount = useMemo(
+    () => customers.filter((c) => c.futureInterest).length,
+    [customers],
   );
 
   const run = (id: string, fn: () => Promise<unknown>) => {
@@ -120,10 +162,18 @@ export function CustomersTable({ customers }: { customers: AdminCustomer[] }) {
         <SelectField
           value={filter}
           onValueChange={setFilter}
-          options={[{ value: 'all', label: 'All statuses' }, ...STATUS_OPTIONS]}
-          className="h-10 w-44 capitalize"
+          options={[
+            { value: 'all', label: 'All statuses' },
+            {
+              value: 'future_interest',
+              label: `★ Awaiting their car${futureInterestCount ? ` (${futureInterestCount})` : ''}`,
+            },
+            ...STATUS_OPTIONS,
+          ]}
+          className="h-10 w-56 capitalize"
         />
         <span className="text-sm text-white/45">{rows.length} shown</span>
+        <StatusCounts counts={counts} labels={{ no_deal: 'No deal' }} />
         <div className="ml-auto flex items-center gap-2">
           <Button type="button" variant="outline" size="sm" onClick={() => setShowAdd((v) => !v)}>
             <Plus className="h-4 w-4" />
@@ -177,7 +227,7 @@ export function CustomersTable({ customers }: { customers: AdminCustomer[] }) {
         </div>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-white/[0.07]">
-          <table className="w-full min-w-[820px] text-sm">
+          <table className="w-full min-w-[1000px] text-sm">
             <thead>
               <tr className="border-b border-white/[0.06] text-left text-[11px] uppercase tracking-widest text-white/40">
                 <th className="p-4">
@@ -187,6 +237,20 @@ export function CustomersTable({ customers }: { customers: AdminCustomer[] }) {
                 <th className="p-4 font-semibold">Interest</th>
                 <th className="p-4 font-semibold">Source</th>
                 <th className="p-4 font-semibold">Status</th>
+                <th className="p-4 font-semibold">
+                  <SortHeader
+                    label="Added"
+                    dir={sortKey === 'created' ? sortDir : null}
+                    onToggle={() => toggleSort('created')}
+                  />
+                </th>
+                <th className="p-4 font-semibold">
+                  <SortHeader
+                    label="Last contacted"
+                    dir={sortKey === 'contacted' ? sortDir : null}
+                    onToggle={() => toggleSort('contacted')}
+                  />
+                </th>
                 <th className="p-4 text-right font-semibold">Actions</th>
               </tr>
             </thead>
@@ -199,7 +263,17 @@ export function CustomersTable({ customers }: { customers: AdminCustomer[] }) {
                       <input type="checkbox" checked={selected.has(c.id)} onChange={() => toggle(c.id)} className="accent-brand-red" />
                     </td>
                     <td className="p-4">
-                      <div className="font-medium text-white">{c.name}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-white">{c.name}</span>
+                        {c.futureInterest && (
+                          <span
+                            title="Opted in to be notified when their car arrives"
+                            className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-300"
+                          >
+                            ★ Awaiting car
+                          </span>
+                        )}
+                      </div>
                       {c.email && (
                         <div className="text-xs text-white/45">
                           {c.email}
@@ -218,6 +292,16 @@ export function CustomersTable({ customers }: { customers: AdminCustomer[] }) {
                         options={STATUS_OPTIONS}
                         className={`h-8 px-2 text-xs capitalize ${statusStyle[c.status] ?? ''}`}
                       />
+                    </td>
+                    <td className="p-4 text-xs">
+                      <DateCell iso={c.createdAt} />
+                    </td>
+                    <td className="p-4 text-xs">
+                      {c.lastContactedAt ? (
+                        <DateCell iso={c.lastContactedAt} />
+                      ) : (
+                        <span className="text-white/30">Never</span>
+                      )}
                     </td>
                     <td className="p-4">
                       <div className="flex items-center justify-end gap-2">

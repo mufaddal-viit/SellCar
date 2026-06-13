@@ -53,6 +53,19 @@ export const leadInputSchema = z.object({
 
 export type LeadInput = z.infer<typeof leadInputSchema>;
 
+/** Home-page "notify me when my car arrives" opt-in. */
+export const carWishSchema = z.object({
+  name: z.string().trim().min(2, 'Please enter your name'),
+  email: z.string().trim().email('Please enter a valid email'),
+  phone: z.string().trim().min(6, 'Please enter a valid mobile number'),
+  // The car they're after — the key field for matching to new inventory.
+  desiredCar: z.string().trim().min(2, 'Tell us which car you want'),
+  budget: z.string().trim().max(60).optional().or(z.literal('')),
+  timeframe: z.string().trim().max(40).optional().or(z.literal('')),
+});
+
+export type CarWishInput = z.infer<typeof carWishSchema>;
+
 // ── Applications (car finance) ───────────────────────────────────────────────
 
 /** Max size per uploaded document (enforced client-side + server-side). */

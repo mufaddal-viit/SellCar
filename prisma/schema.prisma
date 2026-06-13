@@ -141,10 +141,13 @@ model Customer {
   email       String?
   phone       String?
   status      String   @default("lead") // lead | active | customer | closed | no_deal | other
-  source      String?  // enquiry | application | whatsapp | call | manual
+  source      String?  // enquiry | application | whatsapp | call | manual | wishlist
   carInterest String?
   notes       String?
   emailOptOut Boolean  @default(false)
+  // Opted in via the "notify me when my car arrives" home-page section — used
+  // to target stock-alert / new-arrival emails specifically at these people.
+  futureInterest Boolean @default(false)
   lastContactedAt DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

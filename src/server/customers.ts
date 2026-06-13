@@ -22,7 +22,11 @@ export interface AdminCustomer {
   carInterest: string | null;
   notes: string | null;
   emailOptOut: boolean;
+  /** Opted in via the home-page "notify me when my car arrives" form. */
+  futureInterest: boolean;
   createdAt: string;
+  /** Last time a promo/email was sent to this customer (null if never). */
+  lastContactedAt: string | null;
 }
 
 function serialize(c: DbCustomer): AdminCustomer {
@@ -36,7 +40,9 @@ function serialize(c: DbCustomer): AdminCustomer {
     carInterest: c.carInterest,
     notes: c.notes,
     emailOptOut: c.emailOptOut,
+    futureInterest: c.futureInterest,
     createdAt: c.createdAt.toISOString(),
+    lastContactedAt: c.lastContactedAt ? c.lastContactedAt.toISOString() : null,
   };
 }
 
@@ -71,6 +77,10 @@ export async function upsertCustomer(data: {
   source?: string;
   carInterest?: string | null;
   status?: string;
+  /** Set true to opt the customer into future-stock alerts (sticky once on). */
+  futureInterest?: boolean;
+  /** Extra context (e.g. budget/timeframe) appended to the customer's notes. */
+  notes?: string | null;
 }): Promise<void> {
   if (!hasDb) return;
   const email = data.email?.toLowerCase().trim() || null;
@@ -95,6 +105,8 @@ export async function upsertCustomer(data: {
         status: data.status || 'lead',
         source: data.source || 'manual',
         carInterest: data.carInterest || null,
+        futureInterest: data.futureInterest ?? false,
+        notes: data.notes?.trim() || null,
       },
     });
     return;
@@ -105,6 +117,14 @@ export async function upsertCustomer(data: {
       ? data.status!
       : existing.status;
 
+  // Append new context to existing notes (don't clobber what's already there).
+  const addNote = data.notes?.trim();
+  const mergedNotes = addNote
+    ? existing.notes
+      ? `${existing.notes}\n${addNote}`
+      : addNote
+    : existing.notes;
+
   await prisma.customer.update({
     where: { id: existing.id },
     data: {
@@ -114,6 +134,9 @@ export async function upsertCustomer(data: {
       carInterest: data.carInterest ?? existing.carInterest,
       source: existing.source ?? data.source ?? null,
       status: keepStatus,
+      // Sticky: never flip an opted-in customer back off.
+      futureInterest: existing.futureInterest || (data.futureInterest ?? false),
+      notes: mergedNotes,
     },
   });
 }

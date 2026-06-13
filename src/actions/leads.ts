@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { prisma, hasDb } from '@/lib/db/prisma';
-import { leadInputSchema } from '@/lib/validation';
+import { leadInputSchema, carWishSchema } from '@/lib/validation';
 import { assertAdmin } from '@/lib/auth-guard';
 import { upsertCustomer } from '@/server/customers';
 import type { LeadStatus } from '@/types';
@@ -61,6 +61,60 @@ export async function submitEnquiry(
   });
 
   revalidatePath('/admin/leads');
+  revalidatePath('/admin/customers');
+  revalidatePath('/admin');
+  return { ok: true };
+}
+
+export interface CarWishState {
+  ok?: boolean;
+  error?: string;
+  fieldErrors?: Record<string, string[]>;
+}
+
+/**
+ * Public: a visitor opts in to be notified when their desired car arrives
+ * (home-page "find me my car" section). Stores them in the customer DB with
+ * futureInterest = true so the admin can target stock-alert emails at them.
+ */
+export async function registerCarWish(
+  _prev: CarWishState,
+  formData: FormData,
+): Promise<CarWishState> {
+  const parsed = carWishSchema.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    phone: formData.get('phone'),
+    desiredCar: formData.get('desiredCar'),
+    budget: formData.get('budget') ?? '',
+    timeframe: formData.get('timeframe') ?? '',
+  });
+  if (!parsed.success) {
+    return { error: 'Please check your details.', fieldErrors: parsed.error.flatten().fieldErrors };
+  }
+  if (!hasDb) {
+    return { error: 'This is temporarily unavailable. Please call or WhatsApp us.' };
+  }
+
+  const d = parsed.data;
+  // Fold budget/timeframe into a single readable wishlist note.
+  const noteParts = [
+    d.budget ? `Budget: ${d.budget}` : '',
+    d.timeframe ? `Timeframe: ${d.timeframe}` : '',
+  ].filter(Boolean);
+  const note = `Wishlist signup${noteParts.length ? ` — ${noteParts.join(' · ')}` : ''}`;
+
+  await upsertCustomer({
+    name: d.name,
+    email: d.email,
+    phone: d.phone,
+    source: 'wishlist',
+    status: 'lead',
+    futureInterest: true,
+    carInterest: d.desiredCar,
+    notes: note,
+  });
+
   revalidatePath('/admin/customers');
   revalidatePath('/admin');
   return { ok: true };

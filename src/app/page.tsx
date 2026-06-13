@@ -1,6 +1,7 @@
 import { Hero } from '@/components/sections/hero';
 import { getCars } from '@/server/cars';
 import { FeaturedCars } from '@/components/sections/featured-cars';
+import { CarWishlist } from '@/components/sections/car-wishlist';
 import { WhyChooseUs } from '@/components/sections/why-choose-us';
 import { Requirements } from '@/components/sections/requirements';
 import { BrandsMarquee } from '@/components/sections/brands-marquee';
@@ -16,6 +17,7 @@ export default async function HomePage() {
       <Hero carCount={cars.length} />
       <BrandsMarquee />
       <FeaturedCars />
+      <CarWishlist />
       <WhyChooseUs />
       <Requirements />
       <TestimonialsSection />
