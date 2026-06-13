@@ -32,7 +32,18 @@ function getTransport(): Transporter {
 async function send(to: string, content: EmailContent): Promise<void> {
   const from =
     process.env.EMAIL_FROM || `"${siteConfig.name}" <${process.env.SMTP_USER}>`;
-  await getTransport().sendMail({ from, to, ...content });
+  const info = await getTransport().sendMail({ from, to, ...content });
+  // Log what the SMTP server actually said. "accepted" means the server took
+  // responsibility for the address; "rejected" / a non-2xx response means it
+  // refused — useful when a message is accepted by us but never delivered.
+  console.log('[email] sent', {
+    to,
+    subject: content.subject,
+    messageId: info.messageId,
+    accepted: info.accepted,
+    rejected: info.rejected,
+    response: info.response,
+  });
 }
 
 export async function sendOtpEmail(to: string, code: string): Promise<void> {
