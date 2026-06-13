@@ -2,10 +2,17 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useMemo, useState, useTransition } from 'react';
 import { Eye, Trash2, FileText } from 'lucide-react';
 import { deleteApplication } from '@/actions/applications';
 import { CopyPhone } from '@/components/admin/copy-phone';
+import {
+  DateCell,
+  SortHeader,
+  StatusCounts,
+  type SortDir,
+} from '@/components/admin/table-bits';
+import { toTimestamp } from '@/lib/utils';
 import type { AdminApplication } from '@/server/applications';
 
 const statusStyle: Record<string, string> = {
@@ -19,6 +26,25 @@ export function ApplicationsTable({ apps }: { apps: AdminApplication[] }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
+
+  // Date sort: null = server order (newest first); click cycles desc → asc.
+  const [sortDir, setSortDir] = useState<SortDir>(null);
+  const toggleSort = () => setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'));
+
+  const sorted = useMemo(() => {
+    if (!sortDir) return apps;
+    return [...apps].sort((a, b) =>
+      sortDir === 'asc'
+        ? toTimestamp(a.createdAt) - toTimestamp(b.createdAt)
+        : toTimestamp(b.createdAt) - toTimestamp(a.createdAt),
+    );
+  }, [apps, sortDir]);
+
+  const counts = useMemo(() => {
+    const c: Record<string, number> = {};
+    for (const a of apps) c[a.status] = (c[a.status] ?? 0) + 1;
+    return c;
+  }, [apps]);
 
   const run = (id: string, fn: () => Promise<unknown>) => {
     setBusyId(id);
@@ -38,7 +64,12 @@ export function ApplicationsTable({ apps }: { apps: AdminApplication[] }) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-white/[0.07]">
+    <div className="space-y-3">
+      <StatusCounts
+        counts={counts}
+        labels={{ in_review: 'In review' }}
+      />
+      <div className="overflow-x-auto rounded-2xl border border-white/[0.07]">
       <table className="w-full min-w-[820px] text-sm">
         <thead>
           <tr className="border-b border-white/[0.06] text-left text-[11px] uppercase tracking-widest text-white/40">
@@ -46,12 +77,14 @@ export function ApplicationsTable({ apps }: { apps: AdminApplication[] }) {
             <th className="p-4 font-semibold">Car</th>
             <th className="p-4 font-semibold">Docs</th>
             <th className="p-4 font-semibold">Status</th>
-            <th className="p-4 font-semibold">Date</th>
+            <th className="p-4 font-semibold">
+              <SortHeader label="Date" dir={sortDir} onToggle={toggleSort} />
+            </th>
             <th className="p-4 text-right font-semibold">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-white/[0.06]">
-          {apps.map((a) => {
+          {sorted.map((a) => {
             const busy = pending && busyId === a.id;
             return (
               <tr key={a.id} className={busy ? 'opacity-50' : undefined}>
@@ -74,8 +107,8 @@ export function ApplicationsTable({ apps }: { apps: AdminApplication[] }) {
                     {a.status.replace('_', ' ')}
                   </span>
                 </td>
-                <td className="p-4 text-xs text-white/45">
-                  {new Date(a.createdAt).toLocaleDateString()}
+                <td className="p-4 text-xs">
+                  <DateCell iso={a.createdAt} />
                 </td>
                 <td className="p-4">
                   <div className="flex items-center justify-end gap-2">
@@ -106,6 +139,7 @@ export function ApplicationsTable({ apps }: { apps: AdminApplication[] }) {
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

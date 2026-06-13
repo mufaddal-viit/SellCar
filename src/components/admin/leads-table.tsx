@@ -6,7 +6,9 @@ import { Trash2, Mail, MessageCircle, Phone, FileText, UserPlus, Check } from 'l
 import { updateLeadStatus, deleteLead, convertLeadToCustomer } from '@/actions/leads';
 import { SelectField } from '@/components/ui/select-field';
 import { CopyPhone } from '@/components/admin/copy-phone';
+import { StatusCounts } from '@/components/admin/table-bits';
 import { Button } from '@/components/ui/button';
+import { formatDate, relativeTime, toTimestamp } from '@/lib/utils';
 import type { Lead, LeadStatus } from '@/types';
 
 const PAGE = 10;
@@ -37,17 +39,29 @@ export function LeadsTable({ leads }: { leads: Lead[] }) {
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const [filter, setFilter] = useState('all');
+  const [sort, setSort] = useState<'newest' | 'oldest'>('newest');
   const [visible, setVisible] = useState(PAGE);
   const [convertMsg, setConvertMsg] = useState<Record<string, string>>({});
   const [convertErr, setConvertErr] = useState<Record<string, string>>({});
 
-  useEffect(() => setVisible(PAGE), [filter]);
+  useEffect(() => setVisible(PAGE), [filter, sort]);
 
-  const filtered = useMemo(
-    () => (filter === 'all' ? leads : leads.filter((l) => l.type === filter)),
-    [leads, filter],
-  );
+  const filtered = useMemo(() => {
+    const base =
+      filter === 'all' ? leads : leads.filter((l) => l.type === filter);
+    return [...base].sort((a, b) =>
+      sort === 'oldest'
+        ? toTimestamp(a.createdAt) - toTimestamp(b.createdAt)
+        : toTimestamp(b.createdAt) - toTimestamp(a.createdAt),
+    );
+  }, [leads, filter, sort]);
   const shown = filtered.slice(0, visible);
+
+  const counts = useMemo(() => {
+    const c: Record<string, number> = {};
+    for (const l of leads) c[l.status] = (c[l.status] ?? 0) + 1;
+    return c;
+  }, [leads]);
 
   const run = (id: string, fn: () => Promise<unknown>) => {
     setBusyId(id);
@@ -85,9 +99,19 @@ export function LeadsTable({ leads }: { leads: Lead[] }) {
           options={TYPE_FILTERS}
           className="h-10 w-44"
         />
+        <SelectField
+          value={sort}
+          onValueChange={(v) => setSort(v as 'newest' | 'oldest')}
+          options={[
+            { value: 'newest', label: 'Newest first' },
+            { value: 'oldest', label: 'Oldest first' },
+          ]}
+          className="h-10 w-40"
+        />
         <span className="text-sm text-white/45">
           {filtered.length} {filter === 'all' ? 'total' : TYPE_FILTERS.find((t) => t.value === filter)?.label.toLowerCase()}
         </span>
+        <StatusCounts counts={counts} />
       </div>
 
       {filtered.length === 0 ? (
@@ -128,8 +152,13 @@ export function LeadsTable({ leads }: { leads: Lead[] }) {
                       </p>
                     )}
                   </div>
-                  <span className="text-xs text-white/40">
-                    {new Date(lead.createdAt).toLocaleString()}
+                  <span className="text-right text-xs text-white/40">
+                    <span className="block">{formatDate(lead.createdAt)}</span>
+                    {relativeTime(lead.createdAt) && (
+                      <span className="block text-[11px] text-white/30">
+                        {relativeTime(lead.createdAt)}
+                      </span>
+                    )}
                   </span>
                 </div>
 

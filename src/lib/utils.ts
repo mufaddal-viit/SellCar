@@ -13,6 +13,44 @@ export function formatEMI(amount: number): string {
   return `AED ${Math.round(amount).toLocaleString('en-AE')}`;
 }
 
+/** "12 Jun 2026" — short, locale-stable absolute date. Returns '—' if invalid. */
+export function formatDate(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+/** Human "time ago" — "just now", "3h ago", "5d ago", "2mo ago". '' if invalid. */
+export function relativeTime(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return '';
+  const secs = Math.round((Date.now() - then) / 1000);
+  if (secs < 0) return 'just now';
+  if (secs < 60) return 'just now';
+  const mins = Math.round(secs / 60);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.round(hrs / 24);
+  if (days < 30) return `${days}d ago`;
+  const months = Math.round(days / 30);
+  if (months < 12) return `${months}mo ago`;
+  return `${Math.round(months / 12)}y ago`;
+}
+
+/** Epoch ms for sorting; 0 for missing/invalid so they sink predictably. */
+export function toTimestamp(iso: string | null | undefined): number {
+  if (!iso) return 0;
+  const t = new Date(iso).getTime();
+  return Number.isNaN(t) ? 0 : t;
+}
+
 export function calculateEMI(
   principal: number,
   annualRate: number,
