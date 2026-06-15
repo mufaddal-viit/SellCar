@@ -135,3 +135,17 @@
 .animate-accordion-up {
   animation: accordion-up 0.2s ease-out;
 }
+
+/* Review page — animated brand-glow orbs */
+@keyframes reviewDrift1 {
+  50% { transform: translate(8vmax, 6vmax) scale(1.1); }
+}
+@keyframes reviewDrift2 {
+  50% { transform: translate(-7vmax, -5vmax) scale(1.08); }
+}
+@keyframes reviewDrift3 {
+  50% { transform: translate(-6vmax, 8vmax) scale(0.92); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .review-orb { animation: none !important; }
+}
