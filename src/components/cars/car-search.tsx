@@ -158,14 +158,17 @@ export function CarSearch({ total, className, onActiveChange }: CarSearchProps) 
       : 'Search cars';
 
   return (
-    <div ref={rootRef} className={cn('relative w-full max-w-2xl', className)}>
+    <div
+      ref={rootRef}
+      className={cn('relative z-50 w-full max-w-2xl', className)}
+    >
       {/* Glassy panel */}
-      <div className="rounded-[28px] border border-white/15 bg-white/[0.07] p-3 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] backdrop-blur-2xl sm:p-4">
-        <p className="mb-2.5 text-center text-sm font-semibold tracking-wide text-white/80 sm:mb-3">
+      <div className="rounded-[28px] border border-white/15 bg-[#191919]/90 p-3 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] backdrop-blur-2xl sm:p-4">
+        <p className="mb-2.5 text-center text-sm font-semibold tracking-wide text-white/85 sm:mb-3">
           Find your perfect car
         </p>
 
-        <div className="flex items-stretch gap-2 rounded-full border border-white/10 bg-white/[0.06] p-1.5 focus-within:border-white/25 sm:gap-3">
+        <div className="flex items-stretch gap-2 rounded-2xl border border-white/12 bg-white/[0.07] p-1.5 transition-colors focus-within:border-white/30 sm:gap-3 sm:rounded-full">
           <div className="relative flex flex-1 items-center">
             <Search className="pointer-events-none absolute left-4 h-4 w-4 text-white/45" />
             <input
@@ -189,7 +192,7 @@ export function CarSearch({ total, className, onActiveChange }: CarSearchProps) 
               aria-controls={listboxId}
               aria-autocomplete="list"
               autoComplete="off"
-              className="w-full bg-transparent py-2.5 pl-11 pr-3 text-sm text-white placeholder:text-white/45 focus:outline-none sm:text-base"
+              className="min-w-0 w-full bg-transparent py-2.5 pl-11 pr-3 text-sm text-white placeholder:text-white/45 focus:outline-none sm:text-base"
             />
             {loading && (
               <Loader2 className="absolute right-2 h-4 w-4 animate-spin text-white/40" />
@@ -199,7 +202,7 @@ export function CarSearch({ total, className, onActiveChange }: CarSearchProps) 
           <button
             type="button"
             onClick={() => goToResults(query)}
-            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-brand-red px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-red/90 sm:px-6"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl bg-brand-red px-4 py-2.5 text-sm font-semibold text-white shadow-[0_12px_24px_-14px_rgba(225,6,0,0.9)] transition-colors hover:bg-brand-red/90 sm:rounded-full sm:px-6"
           >
             <span className="hidden sm:inline">{countLabel}</span>
             <span className="sm:hidden">Search</span>
@@ -216,13 +219,30 @@ export function CarSearch({ total, className, onActiveChange }: CarSearchProps) 
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
             transition={{ duration: 0.16, ease: 'easeOut' }}
-            className="absolute left-0 right-0 z-40 mt-2 overflow-hidden rounded-2xl border border-white/12 bg-brand-black/95 shadow-[0_30px_70px_-20px_rgba(0,0,0,0.95)] backdrop-blur-2xl"
+            className="absolute left-0 right-0 z-[100] mt-3 overflow-hidden rounded-2xl border border-white/15 bg-[#080808]/98 shadow-[0_34px_90px_-18px_rgba(0,0,0,0.98)] ring-1 ring-black/30 backdrop-blur-2xl"
           >
-            <ul id={listboxId} role="listbox" className="max-h-[60vh] overflow-y-auto py-1.5">
+            <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5">
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-white/45">
+                Matching cars
+              </span>
+              {loading ? (
+                <span className="text-[11px] text-white/40">Searching...</span>
+              ) : (
+                <span className="text-[11px] text-white/40">
+                  {matched.toLocaleString('en-AE')} found
+                </span>
+              )}
+            </div>
+
+            <ul
+              id={listboxId}
+              role="listbox"
+              className="max-h-[min(360px,calc(100vh-18rem))] overflow-y-auto overscroll-contain py-1.5"
+            >
               {hits.length === 0 && !loading ? (
                 <li className="px-4 py-6 text-center text-sm text-white/50">
                   No cars match{' '}
-                  <span className="text-white/80">“{query.trim()}”</span>
+                  <span className="text-white/80">&quot;{query.trim()}&quot;</span>
                 </li>
               ) : (
                 hits.map((hit, i) => (
@@ -232,7 +252,7 @@ export function CarSearch({ total, className, onActiveChange }: CarSearchProps) 
                       onMouseEnter={() => setHighlight(i)}
                       onClick={() => router.push(`/cars/${hit.slug}`)}
                       className={cn(
-                        'flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors',
+                        'flex w-full items-center gap-3 px-3 py-3 text-left transition-colors sm:px-4',
                         i === highlight ? 'bg-white/[0.08]' : 'hover:bg-white/[0.05]',
                       )}
                     >
@@ -262,10 +282,10 @@ export function CarSearch({ total, className, onActiveChange }: CarSearchProps) 
                           )}
                         </span>
                         <span className="mt-0.5 block truncate text-[11px] text-white/45">
-                          {hit.brand} · {hit.category} · {hit.year}
+                          {hit.brand} &middot; {hit.category} &middot; {hit.year}
                         </span>
                       </span>
-                      <span className="shrink-0 text-right">
+                      <span className="hidden shrink-0 text-right sm:block">
                         <span className="block text-[10px] uppercase tracking-wide text-white/40">
                           EMI from
                         </span>
