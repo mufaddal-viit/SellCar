@@ -18,7 +18,8 @@
     "postinstall": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
     "import:cars": "tsx scripts/import-cars.ts",
-    "cars:prune": "tsx scripts/prune-cars.ts"
+    "cars:prune": "tsx scripts/prune-cars.ts",
+    "cars:emi": "tsx scripts/recompute-emi.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

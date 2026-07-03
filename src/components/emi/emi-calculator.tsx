@@ -6,8 +6,8 @@ import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
-  calculateEMI,
-  calculateTotalInterest,
+  calculateFlatEMI,
+  FLAT_RATE,
   formatEMI,
   formatPrice,
 } from '@/lib/utils';
@@ -28,15 +28,23 @@ export function EMICalculator({
   const [price, setPrice] = useState(initialPrice);
   const [downPct, setDownPct] = useState(20);
   const [tenure, setTenure] = useState(60);
-  const [rate, setRate] = useState(2.99);
+  const [rate, setRate] = useState(FLAT_RATE);
 
   const result = useMemo(() => {
     const down = (price * downPct) / 100;
-    const principal = price - down;
-    const emi = calculateEMI(principal, rate, tenure);
-    const totalInterest = calculateTotalInterest(emi, tenure, principal);
-    const totalPayable = principal + totalInterest;
-    return { down, principal, emi, totalInterest, totalPayable };
+    const { financed, monthly, totalProfit, totalPayable } = calculateFlatEMI(
+      price,
+      down,
+      tenure,
+      rate,
+    );
+    return {
+      down,
+      principal: financed,
+      emi: monthly,
+      totalInterest: totalProfit,
+      totalPayable,
+    };
   }, [price, downPct, tenure, rate]);
 
   const waMsg = encodeURIComponent(
@@ -94,18 +102,18 @@ export function EMICalculator({
             range={['12 mo', '60 mo']}
           />
           <Field
-            label="Profit Rate"
-            value={`${rate.toFixed(2)}% p.a.`}
+            label="Bank Rate"
+            value={`${rate.toFixed(2)}% flat p.a.`}
             slider={
               <Slider
                 value={rate}
-                min={2}
-                max={8}
+                min={4.15}
+                max={5.15}
                 step={0.05}
                 onChange={setRate}
               />
             }
-            range={['2%', '8%']}
+            range={['4.15%', '5.15%']}
           />
         </div>
       </div>
