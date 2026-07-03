@@ -117,7 +117,7 @@ export function Hero({ carCount }: { carCount?: number }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.45 }}
-            className="mt-10 flex flex-wrap items-center gap-3 sm:gap-4"
+            className="relative z-50 mt-10 flex flex-wrap items-center gap-3 sm:gap-4"
           >
             {active === 0 ? (
               <CarSearch
