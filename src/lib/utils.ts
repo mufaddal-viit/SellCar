@@ -51,25 +51,29 @@ export function toTimestamp(iso: string | null | undefined): number {
   return Number.isNaN(t) ? 0 : t;
 }
 
-export function calculateEMI(
-  principal: number,
-  annualRate: number,
-  tenureMonths: number,
-): number {
-  const monthlyRate = annualRate / 12 / 100;
-  if (monthlyRate === 0) return principal / tenureMonths;
-  const emi =
-    (principal * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths)) /
-    (Math.pow(1 + monthlyRate, tenureMonths) - 1);
-  return emi;
-}
+/** The flat profit rate (% per annum) applied to every finance plan. */
+export const FLAT_RATE = 5.15;
 
-export function calculateTotalInterest(
-  emi: number,
+/**
+ * Flat-rate finance calculation (not reducing-balance).
+ *
+ * Profit is charged on the financed amount (price − down payment) for the full
+ * term: profit = financed × rate% × years. Monthly = total payback / months.
+ *
+ *   48,000 @ 5.15% flat × 5yr, 0 down → 12,360 profit → 60,360 → ~1,006/mo
+ */
+export function calculateFlatEMI(
+  price: number,
+  downPayment: number,
   tenureMonths: number,
-  principal: number,
-): number {
-  return emi * tenureMonths - principal;
+  annualRate: number = FLAT_RATE,
+): { financed: number; monthly: number; totalProfit: number; totalPayable: number } {
+  const financed = Math.max(0, price - downPayment);
+  const years = tenureMonths / 12;
+  const totalProfit = (financed * annualRate * years) / 100;
+  const totalPayable = financed + totalProfit;
+  const monthly = tenureMonths > 0 ? totalPayable / tenureMonths : 0;
+  return { financed, monthly, totalProfit, totalPayable };
 }
 
 interface OfferFlags {

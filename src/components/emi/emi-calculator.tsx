@@ -6,8 +6,8 @@ import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
-  calculateEMI,
-  calculateTotalInterest,
+  calculateFlatEMI,
+  FLAT_RATE,
   formatEMI,
   formatPrice,
 } from '@/lib/utils';
@@ -18,25 +18,36 @@ interface Props {
   initialPrice?: number;
   className?: string;
   compact?: boolean;
+  /** Fix the car price (no slider). Defaults on when an initialPrice is given. */
+  lockPrice?: boolean;
 }
 
 export function EMICalculator({
-  initialPrice = 100000,
+  initialPrice,
   className,
   compact = false,
+  lockPrice = initialPrice !== undefined,
 }: Props) {
-  const [price, setPrice] = useState(initialPrice);
-  const [downPct, setDownPct] = useState(20);
+  const [price, setPrice] = useState(initialPrice ?? 100000);
+  const [downPct, setDownPct] = useState(0);
   const [tenure, setTenure] = useState(60);
-  const [rate, setRate] = useState(2.99);
+  const [rate, setRate] = useState(FLAT_RATE);
 
   const result = useMemo(() => {
     const down = (price * downPct) / 100;
-    const principal = price - down;
-    const emi = calculateEMI(principal, rate, tenure);
-    const totalInterest = calculateTotalInterest(emi, tenure, principal);
-    const totalPayable = principal + totalInterest;
-    return { down, principal, emi, totalInterest, totalPayable };
+    const { financed, monthly, totalProfit, totalPayable } = calculateFlatEMI(
+      price,
+      down,
+      tenure,
+      rate,
+    );
+    return {
+      down,
+      principal: financed,
+      emi: monthly,
+      totalInterest: totalProfit,
+      totalPayable,
+    };
   }, [price, downPct, tenure, rate]);
 
   const waMsg = encodeURIComponent(
@@ -51,20 +62,24 @@ export function EMICalculator({
     <div className={`grid grid-cols-1 lg:grid-cols-5 gap-px bg-white/[0.06] border border-white/[0.06] ${className || ''}`}>
       <div className="lg:col-span-3 bg-brand-black-soft p-6 md:p-10">
         <div className="space-y-8">
-          <Field
-            label="Car Price"
-            value={formatPrice(price)}
-            slider={
-              <Slider
-                value={price}
-                min={30000}
-                max={1500000}
-                step={5000}
-                onChange={setPrice}
-              />
-            }
-            range={['AED 30K', 'AED 1.5M']}
-          />
+          {lockPrice ? (
+            <Field label="Car Price" value={formatPrice(price)} />
+          ) : (
+            <Field
+              label="Car Price"
+              value={formatPrice(price)}
+              slider={
+                <Slider
+                  value={price}
+                  min={30000}
+                  max={1500000}
+                  step={5000}
+                  onChange={setPrice}
+                />
+              }
+              range={['AED 30K', 'AED 1.5M']}
+            />
+          )}
           <Field
             label="Down Payment"
             value={`${downPct}% • ${formatPrice(result.down)}`}
@@ -94,18 +109,18 @@ export function EMICalculator({
             range={['12 mo', '60 mo']}
           />
           <Field
-            label="Profit Rate"
+            label="Bank Rate"
             value={`${rate.toFixed(2)}% p.a.`}
             slider={
               <Slider
                 value={rate}
-                min={2}
-                max={8}
+                min={4.15}
+                max={5.15}
                 step={0.05}
                 onChange={setRate}
               />
             }
-            range={['2%', '8%']}
+            range={['4.15%', '5.15%']}
           />
         </div>
       </div>
@@ -126,8 +141,9 @@ export function EMICalculator({
         <div className="mt-1 text-sm opacity-80">per month</div>
 
         <div className="mt-8 space-y-4 pt-8 border-t border-white/20">
+          {/* <Row label="Car Amount" value={formatPrice(price)} /> */}
           <Row label="Finance Amount" value={formatPrice(result.principal)} />
-          <Row label="Total Profit" value={formatPrice(result.totalInterest)} />
+          <Row label="Financing Cost" value={formatPrice(result.totalInterest)} />
           <Row
             label="Total Payable"
             value={formatPrice(result.totalPayable)}
@@ -171,8 +187,8 @@ function Field({
 }: {
   label: string;
   value: string;
-  slider: React.ReactNode;
-  range: [string, string];
+  slider?: React.ReactNode;
+  range?: [string, string];
 }) {
   return (
     <div>
@@ -181,10 +197,12 @@ function Field({
         <span className="text-sm font-semibold text-white">{value}</span>
       </div>
       {slider}
-      <div className="mt-2 flex items-center justify-between text-[10px] text-white/40">
-        <span>{range[0]}</span>
-        <span>{range[1]}</span>
-      </div>
+      {range && (
+        <div className="mt-2 flex items-center justify-between text-[10px] text-white/40">
+          <span>{range[0]}</span>
+          <span>{range[1]}</span>
+        </div>
+      )}
     </div>
   );
 }
