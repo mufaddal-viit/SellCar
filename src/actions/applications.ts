@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { prisma, hasDb } from '@/lib/db/prisma';
 import { destroyDoc, getAssetBytes } from '@/lib/cloudinary';
 import { verifyEmailToken } from '@/lib/otp';
-import { hasEmail, sendApprovedEmail, sendRejectedEmail } from '@/lib/email';
+import { hasEmail, sendApprovedEmail, sendRejectedEmail, sendAdminNotification } from '@/lib/email';
 import { upsertCustomer } from '@/server/customers';
 import { assertAdmin } from '@/lib/auth-guard';
 import { slugify } from '@/lib/utils';
@@ -123,6 +123,17 @@ export async function submitApplication(
     carInterest: carName,
     status: 'active',
   });
+
+  // Notify admin via email.
+  if (hasEmail) {
+    sendAdminNotification({
+      type: 'application',
+      name: d.name,
+      phone: d.mobile,
+      email: session.email,
+      carName: carName,
+    }).catch(() => {});
+  }
 
   revalidatePath('/admin/applications');
   revalidatePath('/admin/customers');

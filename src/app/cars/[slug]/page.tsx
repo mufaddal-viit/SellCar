@@ -273,7 +273,7 @@ export default async function CarDetailPage({ params }: PageProps) {
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
               {related.map((c, i) => (
                 <CarCard key={c.id} car={c} index={i} />
               ))}

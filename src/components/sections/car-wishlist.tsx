@@ -28,24 +28,24 @@ export function CarWishlist() {
   return (
     <section className="section bg-brand-black">
       <div className="container-wide">
-        <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-br from-brand-black-soft via-brand-black-soft to-brand-red/[0.06] p-8 sm:p-12 lg:p-16">
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-white/[0.08] bg-gradient-to-br from-brand-black-soft via-brand-black-soft to-brand-red/[0.06] p-5 sm:p-10 lg:p-16">
           {/* Subtle decorative grid + glow */}
           <div className="pointer-events-none absolute inset-0 bg-grid-pattern bg-[size:48px_48px] opacity-[0.12]" />
           <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-brand-red/20 blur-[120px]" />
 
-          <div className="relative grid items-center gap-10 lg:grid-cols-2">
+          <div className="relative grid items-center gap-8 sm:gap-10 lg:grid-cols-2">
             {/* Copy */}
             <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
-                <Search className="h-3.5 w-3.5 text-brand-red" />
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+                <Search className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-brand-red" />
                 Car finder
               </span>
-              <h2 className="display-heading mt-5 text-3xl text-white sm:text-4xl lg:text-5xl">
+              <h2 className="display-heading mt-4 sm:mt-5 text-2xl text-white sm:text-3xl lg:text-5xl">
                 Didn&apos;t find your match?
                 <br />
                 <span className="italic text-brand-red">We&apos;ll hunt it down.</span>
               </h2>
-              <p className="mt-5 max-w-md text-base leading-relaxed text-white/65">
+              <p className="mt-3 sm:mt-5 max-w-md text-sm sm:text-base leading-relaxed text-white/65">
                 Tell us the car you&apos;re after. The moment it lands on our lot —
                 at the right price, on easy monthly finance — you&apos;ll be the
                 first to know. No spam, just your car.
@@ -53,30 +53,30 @@ export function CarWishlist() {
             </div>
 
             {/* Form */}
-            <div className="rounded-2xl border border-white/[0.08] bg-brand-black/40 p-6 backdrop-blur-sm sm:p-8">
+            <div className="rounded-xl sm:rounded-2xl border border-white/[0.08] bg-brand-black/40 p-4 sm:p-6 lg:p-8 backdrop-blur-sm">
               {state.ok ? (
-                <div className="flex items-start gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-5 text-emerald-200">
-                  <CheckCircle2 className="mt-0.5 h-6 w-6 shrink-0" />
+                <div className="flex items-start gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 sm:p-5 text-emerald-200">
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 sm:h-6 sm:w-6 shrink-0" />
                   <div>
-                    <p className="font-semibold text-white">You&apos;re on the list!</p>
-                    <p className="mt-1 text-sm">
+                    <p className="font-semibold text-white text-sm sm:text-base">You&apos;re on the list!</p>
+                    <p className="mt-1 text-xs sm:text-sm">
                       We&apos;ll reach out the moment a matching car arrives.
                     </p>
                   </div>
                 </div>
               ) : (
-                <form action={formAction} className="space-y-4">
+                <form action={formAction} className="space-y-3 sm:space-y-4">
                   <div>
-                    <Label htmlFor="wish-name" className="mb-2 block">
+                    <Label htmlFor="wish-name" className="mb-1.5 sm:mb-2 block text-sm">
                       Your name
                     </Label>
                     <Input id="wish-name" name="name" placeholder="Full name" autoComplete="name" />
                     {err('name') && <p className="mt-1 text-xs text-red-400">{err('name')}</p>}
                   </div>
 
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                     <div>
-                      <Label htmlFor="wish-email" className="mb-2 block">
+                      <Label htmlFor="wish-email" className="mb-1.5 sm:mb-2 block text-sm">
                         Email
                       </Label>
                       <Input
@@ -89,7 +89,7 @@ export function CarWishlist() {
                       {err('email') && <p className="mt-1 text-xs text-red-400">{err('email')}</p>}
                     </div>
                     <div>
-                      <Label htmlFor="wish-phone" className="mb-2 block">
+                      <Label htmlFor="wish-phone" className="mb-1.5 sm:mb-2 block text-sm">
                         Mobile
                       </Label>
                       <Input
@@ -104,7 +104,7 @@ export function CarWishlist() {
                   </div>
 
                   <div>
-                    <Label htmlFor="wish-car" className="mb-2 block">
+                    <Label htmlFor="wish-car" className="mb-1.5 sm:mb-2 block text-sm">
                       Which car are you looking for?
                     </Label>
                     <Input
@@ -117,9 +117,9 @@ export function CarWishlist() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                     <div>
-                      <Label htmlFor="wish-budget" className="mb-2 block">
+                      <Label htmlFor="wish-budget" className="mb-1.5 sm:mb-2 block text-sm">
                         Budget / monthly EMI{' '}
                         <span className="font-normal text-white/35">(optional)</span>
                       </Label>
@@ -130,7 +130,7 @@ export function CarWishlist() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="wish-timeframe" className="mb-2 block">
+                      <Label htmlFor="wish-timeframe" className="mb-1.5 sm:mb-2 block text-sm">
                         When are you buying?{' '}
                         <span className="font-normal text-white/35">(optional)</span>
                       </Label>
@@ -138,7 +138,7 @@ export function CarWishlist() {
                         id="wish-timeframe"
                         name="timeframe"
                         defaultValue=""
-                        className="h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-base text-white focus:border-brand-red focus:outline-none"
+                        className="h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm sm:text-base text-white focus:border-brand-red focus:outline-none transition-colors"
                       >
                         <option value="" className="bg-brand-black">
                           Select…
@@ -161,7 +161,7 @@ export function CarWishlist() {
                   )}
 
                   <SubmitButton />
-                  <p className="text-xs text-white/40">
+                  <p className="text-[11px] sm:text-xs text-white/40">
                     We&apos;ll only contact you about cars matching your interest.
                   </p>
                 </form>

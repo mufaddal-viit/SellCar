@@ -82,12 +82,24 @@ const config: Config = {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' },
         },
+        'wa-pulse': {
+          '0%': { opacity: '0.45', transform: 'scale(1)' },
+          '70%': { opacity: '0', transform: 'scale(1.5)' },
+          '100%': { opacity: '0', transform: 'scale(1.5)' },
+        },
+        'wa-pulse-inner': {
+          '0%': { opacity: '0.35', transform: 'scale(1)' },
+          '60%': { opacity: '0', transform: 'scale(1.3)' },
+          '100%': { opacity: '0', transform: 'scale(1.3)' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.6s ease-out forwards',
         'slide-in-right': 'slide-in-right 0.6s ease-out forwards',
         'marquee': 'marquee 50s linear infinite',
         'shimmer': 'shimmer 2.5s linear infinite',
+        'wa-pulse': 'wa-pulse 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+        'wa-pulse-inner': 'wa-pulse-inner 2.2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s infinite',
       },
       backgroundImage: {
         'grid-pattern':

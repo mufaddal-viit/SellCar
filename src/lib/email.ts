@@ -5,6 +5,7 @@ import { otpEmail, type EmailContent } from '@/emails/otp-email';
 import { approvedEmail } from '@/emails/approved-email';
 import { rejectionEmail } from '@/emails/rejection-email';
 import { promoEmail } from '@/emails/promo-email';
+import { adminNotificationEmail } from '@/emails/admin-notification-email';
 
 export const hasEmail = Boolean(
   process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD,
@@ -51,6 +52,14 @@ export async function sendRejectedEmail(
   data: { name: string; carName?: string | null; reason?: string | null },
 ): Promise<void> {
   await send(to, rejectionEmail(data));
+}
+
+export async function sendAdminNotification(
+  data: Parameters<typeof adminNotificationEmail>[0],
+): Promise<void> {
+  const to =
+    process.env.EMAIL_FROM || `${siteConfig.name} <${process.env.SMTP_USER}>`;
+  await send(to, adminNotificationEmail(data));
 }
 
 export async function sendPromoEmail(

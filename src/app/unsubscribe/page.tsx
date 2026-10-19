@@ -1,3 +1,4 @@
+import { createHmac } from 'node:crypto';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { CheckCircle2, Mail } from 'lucide-react';
@@ -10,14 +11,24 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+function verifyUnsubscribe(customerId: string, sig: string): boolean {
+  const secret = process.env.AUTH_SECRET || '';
+  const expected = createHmac('sha256', secret).update(`unsub:${customerId}`).digest('hex').slice(0, 16);
+  return sig === expected;
+}
+
 export default async function UnsubscribePage({
   searchParams,
 }: {
-  searchParams: Promise<{ c?: string }>;
+  searchParams: Promise<{ c?: string; s?: string }>;
 }) {
-  const { c } = await searchParams;
+  const { c, s } = await searchParams;
   let ok = false;
-  if (hasDb && typeof c === 'string' && /^[a-f0-9]{24}$/i.test(c)) {
+  if (
+    hasDb &&
+    typeof c === 'string' && /^[a-f0-9]{24}$/i.test(c) &&
+    typeof s === 'string' && verifyUnsubscribe(c, s)
+  ) {
     try {
       await prisma.customer.update({ where: { id: c }, data: { emailOptOut: true } });
       ok = true;

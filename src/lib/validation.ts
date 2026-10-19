@@ -43,23 +43,23 @@ export const carInputSchema = z.object({
 export type CarInput = z.infer<typeof carInputSchema>;
 
 export const leadInputSchema = z.object({
-  name: z.string().min(2, 'Please enter your name'),
-  phone: z.string().min(6, 'Please enter a valid phone number'),
-  email: z.string().email('Invalid email').optional().or(z.literal('')),
+  name: z.string().min(2, 'Please enter your name').max(100),
+  phone: z.string().min(6, 'Please enter a valid phone number').max(20),
+  email: z.string().max(254).email('Invalid email').optional().or(z.literal('')),
   message: z.string().max(2000).optional().or(z.literal('')),
-  carId: z.string().optional(),
-  carName: z.string().optional(),
+  carId: z.string().max(30).optional(),
+  carName: z.string().max(120).optional(),
 });
 
 export type LeadInput = z.infer<typeof leadInputSchema>;
 
 /** Home-page "notify me when my car arrives" opt-in. */
 export const carWishSchema = z.object({
-  name: z.string().trim().min(2, 'Please enter your name'),
-  email: z.string().trim().email('Please enter a valid email'),
-  phone: z.string().trim().min(6, 'Please enter a valid mobile number'),
+  name: z.string().trim().min(2, 'Please enter your name').max(100),
+  email: z.string().trim().max(254).email('Please enter a valid email'),
+  phone: z.string().trim().min(6, 'Please enter a valid mobile number').max(20),
   // The car they're after — the key field for matching to new inventory.
-  desiredCar: z.string().trim().min(2, 'Tell us which car you want'),
+  desiredCar: z.string().trim().min(2, 'Tell us which car you want').max(200),
   budget: z.string().trim().max(60).optional().or(z.literal('')),
   timeframe: z.string().trim().max(40).optional().or(z.literal('')),
 });
@@ -86,21 +86,21 @@ export type DocKind = (typeof DOC_KINDS)[number];
  */
 export const REQUIRED_DOC_KINDS: DocKind[] = ['emirates_id', 'visa', 'passport'];
 
-const optStr = z.string().trim().optional().or(z.literal(''));
+const optStr = z.string().trim().max(300).optional().or(z.literal(''));
 
 export const applicationDocSchema = z.object({
   kind: z.enum(DOC_KINDS),
-  publicId: z.string().min(1),
-  resourceType: z.string().default('image'),
-  format: z.string().default(''),
+  publicId: z.string().min(1).max(200),
+  resourceType: z.string().max(20).default('image'),
+  format: z.string().max(20).default(''),
 });
 
 export const applicationSubmitSchema = z.object({
-  carId: z.string().optional(),
-  carName: z.string().optional(),
-  name: z.string().trim().min(2, 'Please enter your name'),
-  mobile: z.string().trim().min(6, 'Please enter a valid mobile number'),
-  email: z.string().trim().email('Invalid email'),
+  carId: z.string().max(30).optional(),
+  carName: z.string().max(120).optional(),
+  name: z.string().trim().min(2, 'Please enter your name').max(100),
+  mobile: z.string().trim().min(6, 'Please enter a valid mobile number').max(20),
+  email: z.string().trim().max(254).email('Invalid email'),
   homeMobile: optStr,
   mother: optStr,
   flat: optStr,

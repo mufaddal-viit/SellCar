@@ -147,7 +147,7 @@ export function CarGrid({
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
               {filtered.map((car, i) => (
                 <CarCard key={car.id} car={car} index={i} />
               ))}

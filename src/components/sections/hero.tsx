@@ -47,9 +47,9 @@ export function Hero({ carCount }: { carCount?: number }) {
             sizes="100vw"
             className="object-cover"
           />
-          {/* Left-to-right + bottom dark gradients keep the white text readable over any photo */}
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-black via-brand-black/80 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-transparent to-transparent" />
+          {/* Scrim overlays — just enough to keep white text readable without hiding the image */}
+          <div className="absolute inset-0 bg-gradient-to-r from-brand-black/90 via-brand-black/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-brand-black/10 to-transparent" />
         </motion.div>
       </AnimatePresence>
 

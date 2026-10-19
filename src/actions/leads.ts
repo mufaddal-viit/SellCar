@@ -1,11 +1,19 @@
 'use server';
 
+import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { prisma, hasDb } from '@/lib/db/prisma';
 import { leadInputSchema, carWishSchema } from '@/lib/validation';
 import { assertAdmin } from '@/lib/auth-guard';
 import { upsertCustomer } from '@/server/customers';
+import { hasEmail, sendAdminNotification } from '@/lib/email';
+import { rateLimit } from '@/lib/rate-limit';
 import type { LeadStatus } from '@/types';
+
+async function getIp(): Promise<string> {
+  const h = await headers();
+  return h.get('x-forwarded-for')?.split(',')[0].trim() || h.get('x-real-ip') || 'unknown';
+}
 
 export interface EnquiryState {
   ok?: boolean;
@@ -18,6 +26,11 @@ export async function submitEnquiry(
   _prev: EnquiryState,
   formData: FormData,
 ): Promise<EnquiryState> {
+  const ip = await getIp();
+  if (!rateLimit(`enquiry:${ip}`, 5, 60 * 1000) || !rateLimit(`enquiry-h:${ip}`, 20, 60 * 60 * 1000)) {
+    return { error: 'Too many submissions. Please try again later.' };
+  }
+
   const parsed = leadInputSchema.safeParse({
     name: formData.get('name'),
     phone: formData.get('phone'),
@@ -60,6 +73,18 @@ export async function submitEnquiry(
     status: 'lead',
   });
 
+  // Notify admin via email.
+  if (hasEmail) {
+    sendAdminNotification({
+      type: 'enquiry',
+      name: d.name,
+      phone: d.phone,
+      email: d.email || null,
+      carName: d.carName || null,
+      message: d.message || null,
+    }).catch(() => {});
+  }
+
   revalidatePath('/admin/leads');
   revalidatePath('/admin/customers');
   revalidatePath('/admin');
@@ -81,6 +106,11 @@ export async function registerCarWish(
   _prev: CarWishState,
   formData: FormData,
 ): Promise<CarWishState> {
+  const ip = await getIp();
+  if (!rateLimit(`wish:${ip}`, 3, 60 * 1000) || !rateLimit(`wish-h:${ip}`, 10, 60 * 60 * 1000)) {
+    return { error: 'Too many submissions. Please try again later.' };
+  }
+
   const parsed = carWishSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
@@ -114,6 +144,21 @@ export async function registerCarWish(
     carInterest: d.desiredCar,
     notes: note,
   });
+
+  // Notify admin via email.
+  if (hasEmail) {
+    sendAdminNotification({
+      type: 'wishlist',
+      name: d.name,
+      phone: d.phone,
+      email: d.email,
+      carName: d.desiredCar,
+      extras: {
+        ...(d.budget ? { Budget: d.budget } : {}),
+        ...(d.timeframe ? { Timeframe: d.timeframe } : {}),
+      },
+    }).catch(() => {});
+  }
 
   revalidatePath('/admin/customers');
   revalidatePath('/admin');

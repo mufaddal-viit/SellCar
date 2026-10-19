@@ -1,10 +1,17 @@
 'use server';
 
+import { createHmac } from 'node:crypto';
 import { revalidatePath } from 'next/cache';
 import { prisma, hasDb } from '@/lib/db/prisma';
 import { hasEmail, sendPromoEmail } from '@/lib/email';
 import { assertAdmin } from '@/lib/auth-guard';
 import { siteConfig } from '@/content/site';
+
+/** Sign a customer id so the unsubscribe link can't be guessed/enumerated. */
+function signUnsubscribe(customerId: string): string {
+  const secret = process.env.AUTH_SECRET || '';
+  return createHmac('sha256', secret).update(`unsub:${customerId}`).digest('hex').slice(0, 16);
+}
 
 export interface ActionState {
   ok?: boolean;
@@ -98,7 +105,7 @@ export async function sendPromo(
     try {
       await sendPromoEmail(c.email, templateId, {
         name: c.name,
-        unsubscribeUrl: `${siteConfig.url}/unsubscribe?c=${c.id}`,
+        unsubscribeUrl: `${siteConfig.url}/unsubscribe?c=${c.id}&s=${signUnsubscribe(c.id)}`,
       });
       sent++;
     } catch {
