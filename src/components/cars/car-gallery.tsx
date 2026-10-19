@@ -9,8 +9,16 @@ interface Props {
   alt: string;
 }
 
+/** Max thumbnails visible in the sidebar before showing "+X more". */
+const MAX_THUMBS = 4;
+
 export function CarGallery({ images, alt }: Props) {
   const [active, setActive] = useState(0);
+  const [showAll, setShowAll] = useState(false);
+
+  const hasOverflow = images.length > MAX_THUMBS;
+  const visibleThumbs = showAll ? images : images.slice(0, MAX_THUMBS);
+  const remaining = images.length - MAX_THUMBS;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[1fr_120px] gap-3">
@@ -36,28 +44,42 @@ export function CarGallery({ images, alt }: Props) {
         </AnimatePresence>
       </div>
 
-      <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-x-visible no-scrollbar">
-        {images.map((src, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => setActive(i)}
-            aria-label={`View image ${i + 1}`}
-            className={`relative shrink-0 w-24 md:w-full aspect-square overflow-hidden bg-brand-black-soft transition-all ${
-              i === active
-                ? 'ring-2 ring-brand-red opacity-100'
-                : 'opacity-50 hover:opacity-80'
-            }`}
-          >
-            <Image
-              src={src}
-              alt=""
-              fill
-              sizes="120px"
-              className="object-cover"
-            />
-          </button>
-        ))}
+      <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-hidden no-scrollbar">
+        {visibleThumbs.map((src, i) => {
+          const isLast = !showAll && hasOverflow && i === MAX_THUMBS - 1;
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => {
+                if (isLast) {
+                  setShowAll(true);
+                } else {
+                  setActive(i);
+                }
+              }}
+              aria-label={isLast ? `Show ${remaining} more images` : `View image ${i + 1}`}
+              className={`relative shrink-0 w-20 md:w-full aspect-square overflow-hidden bg-brand-black-soft transition-all ${
+                i === active && !isLast
+                  ? 'ring-2 ring-brand-red opacity-100'
+                  : 'opacity-50 hover:opacity-80'
+              }`}
+            >
+              <Image
+                src={src}
+                alt=""
+                fill
+                sizes="120px"
+                className="object-cover"
+              />
+              {isLast && (
+                <div className="absolute inset-0 bg-brand-black/70 grid place-items-center">
+                  <span className="font-display text-lg font-bold text-white">+{remaining}</span>
+                </div>
+              )}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
